@@ -1,6 +1,6 @@
 import test from 'ava';
 import 'babel-core/register';
-import _mapUrlToRoute from '../../src/utils/mapUrlToRoute';
+import _mapUrlToRoute from 'src/utils/mapUrlToRoute';
 
 // Tweak mapUrlToRoute until t.same is relaxed in ava.
 const mapUrlToRoute = (...args) => {

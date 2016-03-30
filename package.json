@@ -45,5 +45,15 @@
     "path-to-regexp": "^1.2.1",
     "query-string": "^4.1.0",
     "url-parse": "^1.1.1"
+  },
+  "ava": {
+       "babel": {
+           "presets": [
+                  "es2015",
+                  "stage-2",
+                  "react"
+           ],
+           "retainLines": true
+       }
   }
 }

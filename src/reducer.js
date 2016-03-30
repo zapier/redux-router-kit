@@ -2,6 +2,7 @@ import ActionTypes from './ActionTypes';
 
 const defaultState = {
   current: null,
+  previous: null,
   next: null
 };
 
