@@ -7,7 +7,8 @@
     "test": "ava test",
     "prebuild": "mkdir -p lib",
     "build": "babel src --out-dir lib",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "patch-release": "npm version patch && npm publish && git push --follow-tags"
   },
   "repository": {
     "type": "git",
