@@ -2,7 +2,6 @@
 
 [![travis](https://travis-ci.org/zapier/redux-router-kit.svg?branch=master)](https://travis-ci.org/zapier/redux-router-kit)
 
-
 Redux Router Kit aims to be a _relatively_ minimalistic router that fits well with Redux and React. Some basics are
 built-in, but you can stitch together its pieces for a customized solution. It provides:
 
