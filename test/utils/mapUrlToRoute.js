@@ -41,3 +41,17 @@ test('route with query', t => {
 
   t.same(routeMatch.query, {q: 'joe'});
 });
+
+test('route with hash', t => {
+
+  const routeMatch = mapUrlToRoute('/users#joe', routes);
+
+  t.is(routeMatch.route, '/users');
+});
+
+test('route with hash and query', t => {
+
+  const routeMatch = mapUrlToRoute('/users?q=joe#foo', routes);
+
+  t.is(routeMatch.route, '/users');
+});

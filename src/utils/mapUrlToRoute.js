@@ -39,18 +39,17 @@ const compiledRouteMatcher = route => {
   return cache[route];
 };
 
-const mapUrlToRoute = (urlAndQueryString, routes) => {
+const mapUrlToRoute = (fullUrl, routes) => {
 
-  const querySeparatorIndex = urlAndQueryString.indexOf('?');
-  const url = urlAndQueryString.substring(0, querySeparatorIndex >= 0 ? querySeparatorIndex : urlAndQueryString.length);
-  const queryStringAndHash = querySeparatorIndex >= 0 ? urlAndQueryString.substring(querySeparatorIndex) : '';
+  const urlWithQueryString = fullUrl.split('#')[0];
+  const url = urlWithQueryString.split('?')[0];
 
   for (let route in routes) {
     const matchRoute = compiledRouteMatcher(route);
     const routeMatch = matchRoute(url);
     if (routeMatch) {
-      const hashIndex = queryStringAndHash.indexOf('#');
-      const queryString = hashIndex >= 0 ? queryStringAndHash.split('#')[0] : queryStringAndHash;
+      const queryStringAndHash = fullUrl.substring(url.length);
+      const queryString = queryStringAndHash.split('#')[0];
       const query = queryStringParser.parse(queryString);
       return {
         route,
