@@ -6,7 +6,7 @@ import routableUrl from '../utils/routableUrl';
 import Actions from '../Actions';
 import routeKeyToRouteValue from '../utils/routeKeyToRouteValue';
 
-const UNDEFINED_HOST = '__undefined__';
+const UNDEFINED_HREF = 'http://example.com/';
 
 let _id = 0;
 const uniqueId = () => {
@@ -16,10 +16,10 @@ const uniqueId = () => {
 
 const browserUrl = () => {
   if (typeof document === 'undefined') {
-    return UNDEFINED_HOST;
+    return UNDEFINED_HREF;
   }
   if (!document || !document.location) {
-    return UNDEFINED_HOST;
+    return UNDEFINED_HREF;
   }
   return document.location.href;
 };
@@ -81,6 +81,11 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         const parsedUrl = parseUrl(action.payload.href, router.href || baseUrl);
 
         const url = routableUrl(parsedUrl.href, router.origin || parsedUrl.origin);
+
+        // Don't allow routing to the exact same location.
+        if (router.current && router.current.location.href === parsedUrl.href) {
+          return;
+        }
 
         const nextRouteInfo = url != null && mapUrlToRoute(url, routes);
 

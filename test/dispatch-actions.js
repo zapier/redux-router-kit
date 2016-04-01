@@ -1,0 +1,47 @@
+import test from 'ava';
+import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
+
+import 'babel-core/register';
+
+import routerReducer from 'src/reducer';
+import createRouterMiddleware from 'src/middleware/createRouterMiddleware';
+import { routeTo } from 'src/Actions';
+
+const reducer = combineReducers({
+  router: routerReducer
+});
+
+const routes = ({
+  '/todos': 'todos'
+});
+
+const createStoreWithMiddleware = compose(
+  applyMiddleware(
+    createRouterMiddleware({routes})
+  )
+)(createStore);
+
+test('dispatch routeTo', t => {
+  const store = createStoreWithMiddleware(reducer);
+  const result = store.dispatch(routeTo('/todos'));
+  let router = store.getState().router;
+  t.is(router.next.url, '/todos');
+  t.is(router.current, null);
+  return result
+    .then(() => {
+      router = store.getState().router;
+      t.is(router.current.url, '/todos');
+    });
+});
+
+test('dispatch to same url should be no-op', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return store.dispatch(routeTo('/todos'))
+    .then(() => {
+      return store.dispatch(routeTo('/todos'));
+    })
+    .then(() => {
+      const router = store.getState().router;
+      t.is(router.previous, null);
+    });
+});
