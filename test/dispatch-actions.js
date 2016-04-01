@@ -34,7 +34,7 @@ test('dispatch routeTo', t => {
     });
 });
 
-test('dispatch to same url should be no-op', t => {
+test('dispatch to same as current url should be no-op', t => {
   const store = createStoreWithMiddleware(reducer);
   return store.dispatch(routeTo('/todos'))
     .then(() => {
@@ -44,4 +44,14 @@ test('dispatch to same url should be no-op', t => {
       const router = store.getState().router;
       t.is(router.previous, null);
     });
+});
+
+test('dispatch to same as next url should be no-op', t => {
+  const store = createStoreWithMiddleware(reducer);
+  store.dispatch(routeTo('/todos'));
+  let router = store.getState().router;
+  const routeId = router.next._routeId;
+  store.dispatch(routeTo('/todos'));
+  router = store.getState().router;
+  t.is(router.next._routeId, routeId);
 });
