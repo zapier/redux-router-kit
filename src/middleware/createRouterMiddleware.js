@@ -84,13 +84,11 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
 
         // Don't allow routing to the exact same location as current.
         if (router.current && router.current.location.href === parsedUrl.href) {
-          console.warn('Attempting to route to the same location as current is a no-op.');
           return;
         }
 
         // Don't allow routing to the exact same location as next.
         if (router.next && router.next.location.href === parsedUrl.href) {
-          console.warn('Attempting to route to the same location as next is a no-op.');
           return;
         }
 
