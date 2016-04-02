@@ -39,7 +39,7 @@ export default function reducer(state = defaultState, action) {
 
       state = {
         ...state,
-        previous: state.current,
+        previous: (!payload.replace && state.current) || state.previous,
         current: {
           ...meta.state,
           _routeId: meta._routeId,

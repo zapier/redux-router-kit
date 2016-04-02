@@ -7,7 +7,9 @@ import { ROUTE_TO_NEXT, ROUTE_TO } from 'src/ActionTypes';
 
 const createRouteAction = (options) => ({
   type: options.type,
-  payload: {},
+  payload: {
+    replace: !!options.replace
+  },
   meta: {
     state: {},
     _routeId: options._routeId,
@@ -80,4 +82,23 @@ test('route to', t => {
   t.is(state.previous.url, '/users');
   t.is(state.previous._routeId, 1);
   t.is(state.previous.location.origin, 'https://example.com');
+});
+
+test('replace', t => {
+  let state = reducer();
+  state = reducer(state, createRouteToAction({
+    _routeId: 1,
+    url: '/users'
+  }));
+  state = reducer(state, createRouteToAction({
+    _routeId: 2,
+    url: '/users/joe'
+  }));
+  state = reducer(state, createRouteToAction({
+    _routeId: 3,
+    url: '/users/joseph',
+    replace: true
+  }));
+  t.is(state.current.url, '/users/joseph');
+  t.is(state.previous.url, '/users');
 });
