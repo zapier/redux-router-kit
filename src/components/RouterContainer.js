@@ -23,7 +23,7 @@ const RouterContainer = React.createClass({
     return (
       <div>
         <Router {...this.props} router={router}/>
-        <History url={router.current.url} onChange={this.onChangeAddress}/>
+        <History url={router.current.url} replace={router.current.replace} onChange={this.onChangeAddress}/>
       </div>
     );
   }
