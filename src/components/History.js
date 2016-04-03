@@ -9,7 +9,13 @@ const History = React.createClass({
   },
 
   componentWillMount() {
-    this.history = createHistory();
+    this.history = this.props.history || createHistory();
+    if (this.props.shouldTriggerCurrent) {
+      const unlistenCurrent = this.history.listen(location => {
+        this.initialUrl = `${location.pathname}${location.search}${location.hash}`;
+      });
+      unlistenCurrent();
+    }
     this.history.listenBefore(this.onBeforeLocationChange);
     onLink((event) => {
       if (event.target.href) {
@@ -21,6 +27,12 @@ const History = React.createClass({
     this.transition({
       replace: true
     });
+  },
+
+  componentDidMount() {
+    if (this.props.shouldTriggerCurrent && this.initialUrl) {
+      this.props.onChange(this.initialUrl);
+    }
   },
 
   transition({replace} = {}) {

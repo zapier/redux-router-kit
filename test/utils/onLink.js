@@ -25,6 +25,7 @@ test('onLink subscribe/click/unsubscribe', t => {
   document.getElementById('hello').dispatchEvent(mouseEvent);
   t.is(triggerCount, 1);
   t.is(clickedHref, 'https://example.com/hello');
+  console.log(window.location.href);
   unsubscribe();
   document.getElementById('hello').dispatchEvent(mouseEvent);
   t.is(triggerCount, 1);

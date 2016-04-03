@@ -39,8 +39,11 @@
     "eslint-plugin-react": "^4.2.3",
     "jsdom": "^8.2.0",
     "react": "^0.14.8",
+    "react-addons-test-utils": "^0.14.8",
+    "react-dom": "^0.14.8",
     "react-redux": "^4.4.1",
-    "redux": "^3.3.1"
+    "redux": "^3.3.1",
+    "sinon": "^1.17.3"
   },
   "dependencies": {
     "history": "^2.0.1",
