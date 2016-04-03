@@ -17,7 +17,7 @@ const History = React.createClass({
       unlistenCurrent();
     }
     this.history.listenBefore(this.onBeforeLocationChange);
-    onLink((event) => {
+    this.unsubscribeFromLinks = onLink((event) => {
       if (event.target.href) {
         event.preventDefault();
         this.props.onChange(event.target.href);
@@ -33,6 +33,10 @@ const History = React.createClass({
     if (this.props.shouldTriggerCurrent && this.initialUrl) {
       this.props.onChange(this.initialUrl);
     }
+  },
+
+  componentWillUnmount() {
+    this.unsubscribeFromLinks();
   },
 
   transition({replace} = {}) {

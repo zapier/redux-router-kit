@@ -12,46 +12,69 @@ test('History calls onChange for new history push', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
   const history = createMemoryHistory();
-  const onChange = sinon.spy();
+  const onChangeSpy = sinon.spy();
   render(
-    <History history={history} onChange={onChange}/>,
+    <History history={history} onChange={onChangeSpy}/>,
     node
   );
-  t.false(onChange.called);
+  t.false(onChangeSpy.called);
   history.push('/hello');
-  t.true(onChange.called);
-  t.same(onChange.lastCall.args, ['/hello']);
+  t.true(onChangeSpy.called);
+  t.same(onChangeSpy.lastCall.args, ['/hello']);
 });
 
 test('History changes when new url is passed to history', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
   const history = createMemoryHistory();
-  const onChange = sinon.spy();
-  const onLocationChange = sinon.spy();
+  const onChangeSpy = sinon.spy();
+  const onLocationChangeSpy = sinon.spy();
   render(
-    <History history={history} onChange={onChange}/>,
+    <History history={history} onChange={onChangeSpy}/>,
     node
   );
-  history.listen(onLocationChange);
+  history.listen(onLocationChangeSpy);
   render(
-    <History history={history} onChange={onChange} url="/hello"/>,
+    <History history={history} onChange={onChangeSpy} url="/hello"/>,
     node
   );
-  t.false(onChange.called);
-  t.true(onLocationChange.called);
-  t.is(onLocationChange.lastCall.args[0].pathname, '/hello');
+  t.false(onChangeSpy.called);
+  t.true(onLocationChangeSpy.called);
+  t.is(onLocationChangeSpy.lastCall.args[0].pathname, '/hello');
 });
 
 test('History sends current lcoation in callback', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
   const history = createMemoryHistory();
-  const onChange = sinon.spy();
+  const onChangeSpy = sinon.spy();
   render(
-    <History history={history} onChange={onChange} shouldTriggerCurrent/>,
+    <History history={history} onChange={onChangeSpy} shouldTriggerCurrent/>,
     node
   );
-  t.true(onChange.called);
-  t.same(onChange.lastCall.args, ['/']);
+  t.true(onChangeSpy.called);
+  t.same(onChangeSpy.lastCall.args, ['/']);
+});
+
+test('History changes when link is clicked', t => {
+  const node = document.createElement('div');
+  document.body.appendChild(node);
+  const history = createMemoryHistory();
+  const onChangeSpy = sinon.spy();
+  render(
+    <div>
+      <History history={history} onChange={onChangeSpy}/>
+      <a id="hello" href="/hello">Hello</a>
+    </div>,
+    node
+  );
+  t.false(onChangeSpy.called);
+  var mouseEvent = new document.defaultView.MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true
+  });
+  document.getElementById('hello').dispatchEvent(mouseEvent);
+  t.true(onChangeSpy.called);
+  t.same(onChangeSpy.lastCall.args, ['https://example.com/hello']);
 });

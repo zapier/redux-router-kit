@@ -1,4 +1,5 @@
 import test from 'ava';
+import sinon from 'sinon';
 
 import 'babel-core/register';
 
@@ -11,22 +12,17 @@ test('onLink subscribe/click/unsubscribe', t => {
   node.innerHTML = `
     <a id="hello" href="/hello">Hello</a>
   `;
-  let triggerCount = 0;
-  let clickedHref = '';
-  const unsubscribe = onLink(({target}) => {
-    triggerCount++;
-    clickedHref = target.href;
-  });
+  const onLinkSpy = sinon.spy();
+  const unsubscribe = onLink(onLinkSpy);
   var mouseEvent = new document.defaultView.MouseEvent('click', {
     view: window,
     bubbles: true,
     cancelable: true
   });
   document.getElementById('hello').dispatchEvent(mouseEvent);
-  t.is(triggerCount, 1);
-  t.is(clickedHref, 'https://example.com/hello');
-  console.log(window.location.href);
+  t.is(onLinkSpy.callCount, 1);
+  t.is(onLinkSpy.lastCall.args[0].target.href, 'https://example.com/hello');
   unsubscribe();
   document.getElementById('hello').dispatchEvent(mouseEvent);
-  t.is(triggerCount, 1);
+  t.is(onLinkSpy.callCount, 1);
 });
