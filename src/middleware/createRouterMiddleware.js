@@ -15,13 +15,13 @@ const uniqueId = () => {
 };
 
 const browserUrl = () => {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return UNDEFINED_HREF;
   }
-  if (!document || !document.location) {
+  if (!window || !window.location) {
     return UNDEFINED_HREF;
   }
-  return document.location.href;
+  return window.location.href;
 };
 
 const baseUrl = browserUrl();

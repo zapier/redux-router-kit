@@ -42,8 +42,19 @@ const onLink = (handler) => {
   };
 
   const getClickedHref = (event) => {
-    // check which button
-    if ((event.which === null ? event.button : event.which) !== 1) { return false; }
+    // jsdom only has event.button
+    // srsly guise, why two different numbers for the same button???
+    if (event.which == null) {
+      // left button
+      if (event.button !== 0) {
+        return false;
+      }
+    } else {
+      // left button
+      if (event.which !== 1) {
+        return false;
+      }
+    }
 
     // check for modifiers
     if (event.metaKey || event.ctrlKey || event.shiftKey) { return false; }

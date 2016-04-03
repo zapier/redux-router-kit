@@ -3,13 +3,13 @@ import React from 'react';
 import connectRouter from './connectRouter';
 
 const browserUrl = () => {
-  if (typeof document === 'undefined') {
+  if (typeof window === 'undefined') {
     return '';
   }
-  if (typeof document.location === 'undefined') {
+  if (typeof window.location === 'undefined') {
     return '';
   }
-  return document.location.href || '';
+  return window.location.href || '';
 };
 
 const RouteToBrowserLocation = React.createClass({

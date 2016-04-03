@@ -37,6 +37,7 @@
     "babel-register": "^6.7.2",
     "eslint": "^2.5.3",
     "eslint-plugin-react": "^4.2.3",
+    "jsdom": "^8.2.0",
     "react": "^0.14.8",
     "react-redux": "^4.4.1",
     "redux": "^3.3.1"
@@ -55,6 +56,9 @@
         "react"
       ],
       "retainLines": true
-    }
+    },
+    "require": [
+      "./test/helpers/setup-browser-env.js"
+    ]
   }
 }
