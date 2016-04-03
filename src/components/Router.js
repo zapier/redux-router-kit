@@ -20,6 +20,8 @@ const Router = React.createClass({
     router: PropTypes.object.isRequired,
     routes: PropTypes.object.isRequired,
 
+    renderBeforeCurrent: PropTypes.func,
+
     notFoundComponent: PropTypes.func,
     renderNotFound: PropTypes.func,
 
@@ -44,6 +46,7 @@ const Router = React.createClass({
 
     const {
       router,
+      renderBeforeCurrent,
       renderRoute, renderComponent, renderDefault, renderNotFound,
       defaultComponent, notFoundComponent
     } = this.props;
@@ -81,6 +84,10 @@ const Router = React.createClass({
       if (renderDefault) {
         return renderDefault(componentProps);
       }
+    }
+
+    if (renderBeforeCurrent) {
+      return renderBeforeCurrent();
     }
 
     return null;

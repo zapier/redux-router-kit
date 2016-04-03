@@ -16,10 +16,6 @@ const RouterContainer = React.createClass({
   render() {
     const { router } = this.props;
 
-    if (!router.current) {
-      return null;
-    }
-
     return (
       <div>
         <Router {...this.props} router={router}/>
