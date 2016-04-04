@@ -1,7 +1,6 @@
 export { default as connectRouter } from './components/connectRouter';
 export { default as Router } from './components/Router';
 export { default as RouterContainer } from './components/RouterContainer';
-export { default as RouteToBrowserLocation } from './components/RouteToBrowserLocation';
 
 export { default as createRouterMiddleware } from './middleware/createRouterMiddleware';
 
