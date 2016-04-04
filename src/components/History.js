@@ -10,7 +10,7 @@ const History = React.createClass({
 
   componentWillMount() {
     this.history = this.props.history || createHistory();
-    if (this.props.shouldTriggerCurrent) {
+    if (this.props.url == null) {
       const unlistenCurrent = this.history.listen(location => {
         this.initialUrl = `${location.pathname}${location.search}${location.hash}`;
       });
@@ -25,12 +25,13 @@ const History = React.createClass({
     });
     // Transition if necessary.
     this.transition({
+      url: this.initialUrl != null ? this.initialUrl : undefined,
       replace: true
     });
   },
 
   componentDidMount() {
-    if (this.props.shouldTriggerCurrent && this.initialUrl) {
+    if (this.props.url == null && this.initialUrl != null) {
       this.props.onChange(this.initialUrl);
     }
   },
@@ -39,12 +40,12 @@ const History = React.createClass({
     this.unsubscribeFromLinks();
   },
 
-  transition({replace} = {}) {
+  transition({replace, url = this.props.url} = {}) {
     this.shouldIgnoreChange = true;
     if (replace || this.props.replace) {
-      this.history.replace(this.props.url);
+      this.history.replace(url);
     } else {
-      this.history.push(this.props.url);
+      this.history.push(url);
     }
     this.shouldIgnoreChange = false;
   },

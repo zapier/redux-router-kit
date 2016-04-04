@@ -16,12 +16,14 @@ const RouterContainer = React.createClass({
   render() {
     const { router } = this.props;
 
+    const url = router.current ? router.current.url : null;
+    const replace = router.current ? router.current.replace : undefined;
+
     return (
       <div>
         <Router {...this.props} router={router}/>
         <History
-          shouldTriggerCurrent={this.props.shouldTriggerCurrent}
-          url={router.current.url} replace={router.current.replace}
+          url={url} replace={replace}
           onChange={this.onChangeAddress}
         />
       </div>

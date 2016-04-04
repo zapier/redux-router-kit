@@ -14,7 +14,7 @@ test('History calls onChange for new history push', t => {
   const history = createMemoryHistory();
   const onChangeSpy = sinon.spy();
   render(
-    <History history={history} onChange={onChangeSpy}/>,
+    <History history={history} onChange={onChangeSpy} url="/"/>,
     node
   );
   t.false(onChangeSpy.called);
@@ -30,7 +30,7 @@ test('History changes when new url is passed to history', t => {
   const onChangeSpy = sinon.spy();
   const onLocationChangeSpy = sinon.spy();
   render(
-    <History history={history} onChange={onChangeSpy}/>,
+    <History history={history} onChange={onChangeSpy} url="/"/>,
     node
   );
   history.listen(onLocationChangeSpy);
@@ -49,7 +49,7 @@ test('History sends current lcoation in callback', t => {
   const history = createMemoryHistory();
   const onChangeSpy = sinon.spy();
   render(
-    <History history={history} onChange={onChangeSpy} shouldTriggerCurrent/>,
+    <History history={history} onChange={onChangeSpy} url={null}/>,
     node
   );
   t.true(onChangeSpy.called);
@@ -63,7 +63,7 @@ test('History changes when link is clicked', t => {
   const onChangeSpy = sinon.spy();
   render(
     <div>
-      <History history={history} onChange={onChangeSpy}/>
+      <History history={history} onChange={onChangeSpy} url="/"/>
       <a id="hello" href="/hello">Hello</a>
     </div>,
     node
