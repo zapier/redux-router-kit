@@ -1,4 +1,5 @@
 export { default as connectRouter } from './components/connectRouter';
+export { default as connectRouteTo } from './components/connectRouteTo';
 export { default as Router } from './components/Router';
 export { default as RouterContainer } from './components/RouterContainer';
 
