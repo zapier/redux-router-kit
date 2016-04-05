@@ -26,7 +26,7 @@ npm install redux-router-kit --save
 import ReactDOM from 'react-dom';
 import { combineReducers, applyMiddleware, Provider } from 'react-redux';
 import {
-  routerReducer, createRouterMiddleware, RouterContainer, RouteToBrowserLocation
+  routerReducer, createRouterMiddleware, RouterContainer
 } from 'redux-router-kit';
 
 import HomePage from './components/HomePage';
@@ -52,9 +52,7 @@ const store = createStore(
 const Root = React.createClass({
   render() {
     return (
-      <RouteToBrowserLocation>
-        <RouterContainer routes={routes}/>
-      </RouteToBrowserLocation>
+      <RouterContainer routes={routes}/>
     )
   }
 })

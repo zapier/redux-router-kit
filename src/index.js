@@ -5,6 +5,7 @@ export { default as RouterContainer } from './components/RouterContainer';
 export { default as createRouterMiddleware } from './middleware/createRouterMiddleware';
 
 export { default as mapUrlToRoute } from './utils/mapUrlToRoute';
+export { default as matchRoutes } from './utils/matchRoutes';
 export { default as routeKeyToRouteValue } from './utils/routeKeyToRouteValue';
 
 export { default as RouterActions } from './Actions';

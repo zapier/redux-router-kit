@@ -3,9 +3,9 @@ import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 
 import 'babel-core/register';
 
-import routerReducer from 'src/reducer';
-import createRouterMiddleware from 'src/middleware/createRouterMiddleware';
-import { routeTo } from 'src/Actions';
+import routerReducer from 'redux-router-kit/src/reducer';
+import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
+import { routeTo } from 'redux-router-kit/src/Actions';
 
 const reducer = combineReducers({
   router: routerReducer

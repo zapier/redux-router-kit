@@ -3,7 +3,7 @@ import sinon from 'sinon';
 
 import 'babel-core/register';
 
-import onLink from 'src/utils/onLink';
+import onLink from 'redux-router-kit/src/utils/onLink';
 
 test('onLink subscribe/click/unsubscribe', t => {
   const node = document.createElement('div');

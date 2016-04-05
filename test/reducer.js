@@ -2,8 +2,8 @@ import test from 'ava';
 
 import 'babel-core/register';
 
-import reducer from 'src/reducer';
-import { ROUTE_TO_NEXT, ROUTE_TO } from 'src/ActionTypes';
+import reducer from 'redux-router-kit/src/reducer';
+import { ROUTE_TO_NEXT, ROUTE_TO } from 'redux-router-kit/src/ActionTypes';
 
 const createRouteAction = (options) => ({
   type: options.type,

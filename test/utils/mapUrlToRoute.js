@@ -1,6 +1,6 @@
 import test from 'ava';
 import 'babel-core/register';
-import _mapUrlToRoute from 'src/utils/mapUrlToRoute';
+import _mapUrlToRoute from 'redux-router-kit/src/utils/mapUrlToRoute';
 
 // Tweak mapUrlToRoute until t.same is relaxed in ava.
 const mapUrlToRoute = (...args) => {
@@ -13,7 +13,23 @@ const mapUrlToRoute = (...args) => {
 
 const routes = {
   '/users': 'users',
-  '/users/:id': 'user'
+  '/users/:id': 'user',
+  '/todos': {
+    name: 'todos',
+    routes: {
+      ':id': {
+        name: 'todo'
+      }
+    }
+  },
+  '/things': {
+    name: 'things',
+    routes: {
+      '/things/:id': {
+        name: 'thing'
+      }
+    }
+  }
 };
 
 test('simple route', t => {
@@ -26,6 +42,14 @@ test('simple route', t => {
   const routeNoMatch = mapUrlToRoute('/losers', routes);
 
   t.is(routeNoMatch, null);
+});
+
+test('optional trailing slash', t => {
+
+  const routeMatch = mapUrlToRoute('/users/', routes);
+
+  t.is(routeMatch.match, routes['/users']);
+  t.is(routeMatch.route, '/users');
 });
 
 test('route with params', t => {
