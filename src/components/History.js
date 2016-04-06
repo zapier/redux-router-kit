@@ -51,7 +51,10 @@ const History = React.createClass({
   },
 
   transition({replace, url = this.props.url, state = this.props.state} = {}) {
-    const location = createLocation(url, state);
+    const location = createLocation(url);
+    if (typeof state !== 'undefined') {
+      location.state = state;
+    }
     this.shouldIgnoreChange = true;
     if (replace || this.props.replace) {
       this.history.replace(location);
