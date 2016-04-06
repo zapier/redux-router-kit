@@ -1,11 +1,19 @@
 import createHistory from 'history/lib/createBrowserHistory';
-import React from 'react';
+import createLocation from 'history/lib/createLocation';
+import React, { PropTypes } from 'react';
+
 import onLink from '../utils/onLink';
+import statesAreEqual from '../utils/statesAreEqual';
 
 const History = React.createClass({
 
-  shouldComponentUpdate({url}) {
-    return url !== this.props.url;
+  propTypes: {
+    url: PropTypes.string,
+    state: PropTypes.object
+  },
+
+  shouldComponentUpdate({url, state}) {
+    return url !== this.props.url || !statesAreEqual(state, this.props.state);
   },
 
   componentWillMount() {
@@ -13,6 +21,7 @@ const History = React.createClass({
     if (this.props.url == null) {
       const unlistenCurrent = this.history.listen(location => {
         this.initialUrl = `${location.pathname}${location.search}${location.hash}`;
+        this.initialState = location.state;
       });
       unlistenCurrent();
     }
@@ -26,13 +35,14 @@ const History = React.createClass({
     // Transition if necessary.
     this.transition({
       url: this.initialUrl != null ? this.initialUrl : undefined,
+      state: this.initialState != null ? this.initialState : undefined,
       replace: true
     });
   },
 
   componentDidMount() {
     if (this.props.url == null && this.initialUrl != null) {
-      this.props.onChange(this.initialUrl);
+      this.props.onChange(this.initialUrl, this.initialState);
     }
   },
 
@@ -40,19 +50,20 @@ const History = React.createClass({
     this.unsubscribeFromLinks();
   },
 
-  transition({replace, url = this.props.url} = {}) {
+  transition({replace, url = this.props.url, state = this.props.state} = {}) {
+    const location = createLocation(url, state);
     this.shouldIgnoreChange = true;
     if (replace || this.props.replace) {
-      this.history.replace(url);
+      this.history.replace(location);
     } else {
-      this.history.push(url);
+      this.history.push(location);
     }
     this.shouldIgnoreChange = false;
   },
 
   componentDidUpdate() {
     if (this.waitingUrl) {
-      if (this.waitingUrl === this.props.url) {
+      if (this.waitingUrl === this.props.url && statesAreEqual(this.waitingState, this.props.state)) {
         this.finish();
       } else {
         this.finish(false);
@@ -60,6 +71,7 @@ const History = React.createClass({
       }
       this.finish = null;
       this.waitingUrl = null;
+      this.waitingState = null;
     } else {
       this.transition();
     }
@@ -67,16 +79,21 @@ const History = React.createClass({
 
   onBeforeLocationChange(location, callback) {
     const newUrl = `${location.pathname}${location.search}${location.hash}`;
-    if (this.shouldIgnoreChange || newUrl === this.props.url) {
+    const newState = location.state;
+    if (this.shouldIgnoreChange || (newUrl === this.props.url && statesAreEqual(newState, this.props.state))) {
       this.shouldIgnoreChange = false;
       callback();
       return;
     }
-    this.waitingUrl = `${location.pathname}${location.search}${location.hash}`;
+    this.waitingUrl = newUrl;
+    this.waitingState = newState;
     this.finish = (result) => {
       callback(result);
     };
-    this.props.onChange(`${location.pathname}${location.search}${location.hash}`);
+    this.props.onChange(
+      newUrl,
+      newState
+    );
   },
 
   render() {

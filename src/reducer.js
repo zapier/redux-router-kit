@@ -6,6 +6,8 @@ const defaultState = {
   next: null
 };
 
+const undefinedAsNull = value => value === undefined ? null : value;
+
 export default function reducer(state = defaultState, action) {
   if (action) {
 
@@ -23,11 +25,12 @@ export default function reducer(state = defaultState, action) {
       state = {
         ...state,
         next: {
-          ...meta.state,
+          ...meta.assign,
           _routeId: meta._routeId,
           routeKey: meta.routeKey,
           location: meta.location,
           url: meta.url,
+          state: undefinedAsNull(payload.state),
           replace: !!payload.replace
         },
         origin: state.origin || meta.location.origin
@@ -41,11 +44,12 @@ export default function reducer(state = defaultState, action) {
         ...state,
         previous: (!payload.replace && state.current) || state.previous,
         current: {
-          ...meta.state,
+          ...meta.assign,
           _routeId: meta._routeId,
           routeKey: meta.routeKey,
           location: meta.location,
           url: meta.url,
+          state: undefinedAsNull(payload.state),
           replace: !!payload.replace
         },
         next: null,

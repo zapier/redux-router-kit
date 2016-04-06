@@ -12,7 +12,14 @@ const reducer = combineReducers({
 });
 
 const routes = ({
-  '/todos': 'todos'
+  '/todos': {
+    name: 'todos',
+    assign() {
+      return {
+        isTodosRoute: true
+      };
+    }
+  },
 });
 
 const createStoreWithMiddleware = compose(
@@ -31,6 +38,24 @@ test('dispatch routeTo', t => {
     .then(() => {
       router = store.getState().router;
       t.is(router.current.url, '/todos');
+      t.true(router.current.isTodosRoute);
+    });
+});
+
+test('dispatch routeTo with state', t => {
+  const store = createStoreWithMiddleware(reducer);
+  const result = store.dispatch(routeTo('/todos', {
+    state: {count: 100}
+  }));
+  let router = store.getState().router;
+  t.is(router.next.url, '/todos');
+  t.same(router.next.state, {count: 100});
+  t.is(router.current, null);
+  return result
+    .then(() => {
+      router = store.getState().router;
+      t.is(router.current.url, '/todos');
+      t.same(router.current.state, {count: 100});
     });
 });
 
@@ -43,6 +68,27 @@ test('dispatch to same as current url should be no-op', t => {
     .then(() => {
       const router = store.getState().router;
       t.is(router.previous, null);
+    });
+});
+
+test('dispatch to same as current url with new state should not be a no-op', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return store.dispatch(routeTo('/todos', {
+    state: {
+      count: 100
+    }
+  }))
+    .then(() => {
+      return store.dispatch(routeTo('/todos', {
+        state: {
+          count: 200
+        }
+      }));
+    })
+    .then(() => {
+      const router = store.getState().router;
+      t.same(router.previous.state, {count: 100});
+      t.same(router.current.state, {count: 200});
     });
 });
 

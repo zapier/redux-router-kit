@@ -5,6 +5,7 @@ import ActionTypes from '../ActionTypes';
 import routableUrl from '../utils/routableUrl';
 import Actions from '../Actions';
 import routeKeyToRouteValue from '../utils/routeKeyToRouteValue';
+import statesAreEqual from '../utils/statesAreEqual';
 
 const UNDEFINED_HREF = 'http://example.com/';
 
@@ -40,8 +41,8 @@ const routeMeta = (routeInfo) => {
 
   if (routeInfo && routeInfo.match) {
     const { match } = routeInfo;
-    const extraState = typeof match.state === 'function' ? (
-      match.state({
+    const extraState = typeof match.assign === 'function' ? (
+      match.assign({
         name: match.name,
         params: routeInfo.params,
         query: routeInfo.query,
@@ -53,7 +54,7 @@ const routeMeta = (routeInfo) => {
       params: routeInfo.params,
       query: routeInfo.query,
       values: routeInfo.values,
-      ...(extraState || match.state)
+      ...(extraState || match.assign)
     };
   }
 
@@ -83,18 +84,24 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         const url = routableUrl(parsedUrl.href, router.origin || parsedUrl.origin);
 
         // Don't allow routing to the exact same location as current.
-        if (router.current && router.current.location.href === parsedUrl.href) {
-          return;
+        if (
+          router.current && router.current.location.href === parsedUrl.href &&
+          statesAreEqual(router.current.state, action.payload.state)
+        ) {
+          return undefined;
         }
 
         // Don't allow routing to the exact same location as next.
-        if (router.next && router.next.location.href === parsedUrl.href) {
-          return;
+        if (
+          router.next && router.next.location.href === parsedUrl.href &&
+          statesAreEqual(router.next.state, action.payload.state)
+        ) {
+          return undefined;
         }
 
         const nextRouteInfo = url != null && mapUrlToRoute(url, routes);
 
-        const state = routeMeta(nextRouteInfo);
+        const assign = routeMeta(nextRouteInfo);
 
         return dispatch({
           type: ActionTypes.ROUTE_TO_NEXT,
@@ -105,7 +112,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           meta: {
             url,
             location: parsedUrl,
-            state,
+            assign,
             _routeId: uniqueId(),
             routeKey: nextRouteInfo && nextRouteInfo.route
           }
@@ -140,6 +147,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
                 }
               }
             }
+            return undefined;
           })
           // Handle onEnter for the next route.
           .then(() => {
@@ -149,6 +157,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
                 return nextMatch.onEnter({routeTo, cancelRoute, getState, dispatch, action, router});
               }
             }
+            return undefined;
           })
           // Finally, move to the next route.
           .then(() => {
@@ -165,6 +174,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
                 });
               });
             }
+            return undefined;
           });
       },
 
@@ -205,7 +215,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
 
         if (event.shiftKey) {
           openWindow(meta.location.href, '_blank');
-          return undefined;
+          return;
         }
 
         openWindow(meta.location.href);
