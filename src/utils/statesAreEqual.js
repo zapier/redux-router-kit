@@ -3,8 +3,8 @@ const statesAreEqual = (a = null, b = null) => {
     return true;
   }
 
-  const typeofA = typeof a;
-  const typeofB = typeof b;
+  const typeofA = a === null ? 'null' : typeof a;
+  const typeofB = b === null ? 'null' : typeof b;
 
   if (typeofA !== typeofB) {
     return false;
