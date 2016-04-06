@@ -9,8 +9,10 @@ const RouterContainer = React.createClass({
     routes: PropTypes.object.isRequired
   },
 
-  onChangeAddress(url) {
-    this.props.routeTo(url);
+  onChangeAddress(url, state) {
+    this.props.routeTo(url, {
+      state
+    });
   },
 
   render() {

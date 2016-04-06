@@ -114,3 +114,26 @@ test('History changes when link is clicked', t => {
   t.true(onChangeSpy.called);
   t.same(onChangeSpy.lastCall.args, ['https://example.com/hello']);
 });
+
+test('History pops state', t => {
+  const node = document.createElement('div');
+  document.body.appendChild(node);
+  const history = createMemoryHistory();
+  const onChangeSpy = sinon.spy();
+  render(
+    <History history={history} onChange={onChangeSpy} url="/"/>,
+    node
+  );
+  history.push({pathname: '/hello', state: {x: 1}});
+  render(
+    <History history={history} onChange={onChangeSpy} url="/hello" state={{x: 1}}/>,
+    node
+  );
+  history.push({pathname: '/bye', state: {x: 2}});
+  render(
+    <History history={history} onChange={onChangeSpy} url="/bye" state={{x: 2}}/>,
+    node
+  );
+  history.goBack();
+  t.same(onChangeSpy.lastCall.args, ['/hello', {x: 1}]);
+});
