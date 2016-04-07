@@ -77,7 +77,8 @@
   },
   "globals": {
     "escape": true,
-    "unescape": true
+    "unescape": true,
+    "Promise": true
   },
   "plugins": [
     "react"

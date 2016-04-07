@@ -6,6 +6,7 @@ import 'babel-core/register';
 import routerReducer from 'redux-router-kit/src/reducer';
 import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
 import { routeTo } from 'redux-router-kit/src/Actions';
+import findRoutes from 'redux-router-kit/src/utils/findRoutes';
 
 const reducer = combineReducers({
   router: routerReducer
@@ -18,6 +19,11 @@ const routes = ({
       return {
         isTodosRoute: true
       };
+    },
+    routes: {
+      ':id': {
+        name: 'todo'
+      }
     }
   },
 });
@@ -38,9 +44,24 @@ test('dispatch routeTo', t => {
     .then(() => {
       router = store.getState().router;
       t.is(router.current.url, '/todos');
+      const routeList = findRoutes(routes, router.current.routeKey);
+      t.is(routeList[0].name, 'todos');
       t.true(router.current.isTodosRoute);
     });
 });
+
+// test('dispatch routeTo for nested route', t => {
+//   const store = createStoreWithMiddleware(reducer);
+//   store.dispatch(routeTo('/todos/123'))
+//     .then(() => {
+//       const router = store.getState().router;
+//       t.is(router.current.url, '/todos/123');
+//       t.same(router.current.params, {id: '123'});
+//       const routeList = findRoutes(routes, router.current.routeKey);
+//       t.is(routeList[0].name, 'todos');
+//       t.is(routeList[1].name, 'todo');
+//     });
+// });
 
 test('dispatch routeTo with state', t => {
   const store = createStoreWithMiddleware(reducer);

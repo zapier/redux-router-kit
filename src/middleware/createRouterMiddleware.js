@@ -162,19 +162,17 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           // Finally, move to the next route.
           .then(() => {
             const { router } = getState();
+            let dispatchResult;
             // Finish the route if we're still routing the same route.
             if (router.next && router.next._routeId === meta._routeId) {
-              return new Promise(resolve => {
-                batchedUpdates(() => {
-                  const batchedDispatchResult = dispatch({
-                    ...action,
-                    type: ActionTypes.ROUTE_TO
-                  });
-                  resolve(batchedDispatchResult);
+              batchedUpdates(() => {
+                dispatchResult = dispatch({
+                  ...action,
+                  type: ActionTypes.ROUTE_TO
                 });
               });
             }
-            return undefined;
+            return dispatchResult;
           });
       },
 
