@@ -6,6 +6,7 @@ import routableUrl from '../utils/routableUrl';
 import Actions from '../Actions';
 import routeKeyToRouteValue from '../utils/routeKeyToRouteValue';
 import statesAreEqual from '../utils/statesAreEqual';
+import isRightClick from '../utils/isRightClick';
 
 const UNDEFINED_HREF = 'http://example.com/';
 
@@ -27,8 +28,8 @@ const browserUrl = () => {
 
 const baseUrl = browserUrl();
 
-const cleanEvent = ({metaKey, ctrlKey, shiftKey, defaultPrevented} = {}) => (
-  {metaKey, ctrlKey, shiftKey, defaultPrevented}
+const cleanEvent = ({metaKey, ctrlKey, shiftKey, defaultPrevented, which, button} = {}) => (
+  {metaKey, ctrlKey, shiftKey, defaultPrevented, which, button}
 );
 
 const openWindow = (...args) => {
@@ -119,10 +120,28 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         });
       },
 
-      // Intercept next route and only dispatch actual route if not cancelled.
+      // Stop next route if event is is not a normal click.
+      // Only dispatch actual ROUTE_TO if not cancelled.
       [ActionTypes.ROUTE_TO_NEXT]({getState, dispatch, action, next}) {
 
         const { meta } = action;
+        const { event } = action.payload;
+
+        if (event.defaultPrevented) {
+          return undefined;
+        }
+
+        if (isRightClick(event)) {
+          return undefined;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.shiftKey) {
+          return dispatch({
+            ...action,
+            type: ActionTypes.ROUTE_TO_WINDOW
+          });
+        }
+
         const result = next(action);
         const routeTo = (...args) => {
           dispatch(Actions.routeTo(...args));
@@ -176,21 +195,9 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           });
       },
 
-      // Intercept actual route if blocked by event or unknown route.
+      // Intercept actual route if unknown route.
       [ActionTypes.ROUTE_TO]({router, dispatch, next, action}) {
         const { meta } = action;
-        const { event } = action.payload;
-
-        if (event.defaultPrevented) {
-          return undefined;
-        }
-
-        if (event.metaKey || event.ctrlKey || event.shiftKey) {
-          return dispatch({
-            ...action,
-            type: ActionTypes.ROUTE_TO_WINDOW
-          });
-        }
 
         const match = routeKeyToRouteValue(meta.routeKey, routes);
 

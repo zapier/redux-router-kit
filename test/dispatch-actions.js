@@ -92,6 +92,40 @@ test('dispatch to same as current url should be no-op', t => {
     });
 });
 
+test('dispatch with right-click should be no-op', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return Promise.resolve(
+    store.dispatch(
+      routeTo('/todos', {
+        event: {
+          button: 2
+        }
+      })
+    )
+  )
+    .then(() => {
+      const router = store.getState().router;
+      t.is(router.current, null);
+    });
+});
+
+test('dispatch with meta-click should be no-op', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return Promise.resolve(
+    store.dispatch(
+      routeTo('/todos', {
+        event: {
+          metaKey: true
+        }
+      })
+    )
+  )
+    .then(() => {
+      const router = store.getState().router;
+      t.is(router.current, null);
+    });
+});
+
 test('dispatch to same as current url with new state should not be a no-op', t => {
   const store = createStoreWithMiddleware(reducer);
   return store.dispatch(routeTo('/todos', {

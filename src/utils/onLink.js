@@ -1,5 +1,7 @@
 import urlParse from 'url-parse';
 
+import isRightClick from './isRightClick';
+
 let isListening = false;
 
 const listeners = [];
@@ -42,23 +44,19 @@ const onLink = (handler) => {
   };
 
   const getClickedHref = (event) => {
-    // jsdom only has event.button
-    // srsly guise, why two different numbers for the same button???
-    if (event.which == null) {
-      // left button
-      if (event.button !== 0) {
-        return false;
-      }
-    } else {
-      // left button
-      if (event.which !== 1) {
-        return false;
-      }
+
+    if (isRightClick(event)) {
+      return false;
     }
 
     // check for modifiers
-    if (event.metaKey || event.ctrlKey || event.shiftKey) { return false; }
-    if (event.defaultPrevented) { return false; }
+    if (event.metaKey || event.ctrlKey || event.shiftKey) {
+      return false;
+    }
+
+    if (event.defaultPrevented) {
+      return false;
+    }
 
     // ensure link
     let element = event.target;

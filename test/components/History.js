@@ -105,7 +105,7 @@ test('History changes when link is clicked', t => {
     node
   );
   t.false(onChangeSpy.called);
-  var mouseEvent = new document.defaultView.MouseEvent('click', {
+  let mouseEvent = new document.defaultView.MouseEvent('click', {
     view: window,
     bubbles: true,
     cancelable: true
@@ -113,6 +113,35 @@ test('History changes when link is clicked', t => {
   document.getElementById('hello').dispatchEvent(mouseEvent);
   t.true(onChangeSpy.called);
   t.same(onChangeSpy.lastCall.args, ['https://example.com/hello']);
+});
+
+test('History has no change for right and meta clicks', t => {
+  const node = document.createElement('div');
+  document.body.appendChild(node);
+  const history = createMemoryHistory();
+  const onChangeSpy = sinon.spy();
+  render(
+    <div>
+      <History history={history} onChange={onChangeSpy} url="/"/>
+      <a id="hello" href="/hello">Hello</a>
+    </div>,
+    node
+  );
+  let mouseEvent = new document.defaultView.MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true,
+    metaKey: true
+  });
+  document.getElementById('hello').dispatchEvent(mouseEvent);
+  mouseEvent = new document.defaultView.MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true,
+    button: 2
+  });
+  document.getElementById('hello').dispatchEvent(mouseEvent);
+  t.false(onChangeSpy.called);
 });
 
 test('History pops state', t => {
