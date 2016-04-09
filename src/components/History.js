@@ -9,11 +9,12 @@ const History = React.createClass({
 
   propTypes: {
     url: PropTypes.string,
-    state: PropTypes.object
+    state: PropTypes.object,
+    isWaiting: PropTypes.bool
   },
 
-  shouldComponentUpdate({url, state}) {
-    return this.waitingUrl != null ||
+  shouldComponentUpdate({url, state, isWaiting}) {
+    return (this.waitingUrl != null && !isWaiting) ||
            url !== this.props.url || !statesAreEqual(state, this.props.state);
   },
 
@@ -80,9 +81,9 @@ const History = React.createClass({
     }
   },
 
-  componentWillReceiveProps({url, state}) {
+  componentWillReceiveProps({url, state, isWaiting}) {
     // Cancel synchronously.
-    if (this.waitingUrl != null) {
+    if (this.waitingUrl != null && !isWaiting) {
       if (this.waitingUrl !== url || !statesAreEqual(this.waitingState, state)) {
         this.finish(false);
       }
