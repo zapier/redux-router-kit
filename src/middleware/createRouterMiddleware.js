@@ -84,22 +84,6 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
 
         const url = routableUrl(parsedUrl.href, router.origin || parsedUrl.origin);
 
-        // Don't allow routing to the exact same location as current.
-        if (
-          router.current && router.current.location.href === parsedUrl.href &&
-          statesAreEqual(router.current.state, action.payload.state)
-        ) {
-          return undefined;
-        }
-
-        // Don't allow routing to the exact same location as next.
-        if (
-          router.next && router.next.location.href === parsedUrl.href &&
-          statesAreEqual(router.next.state, action.payload.state)
-        ) {
-          return undefined;
-        }
-
         const nextRouteInfo = url != null && mapUrlToRoute(url, routes);
 
         const assign = routeMeta(nextRouteInfo);
@@ -120,9 +104,10 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         });
       },
 
-      // Stop next route if event is is not a normal click.
-      // Only dispatch actual ROUTE_TO if not cancelled.
-      [ActionTypes.ROUTE_TO_NEXT]({getState, dispatch, action, next}) {
+      // Check for cancelling events.
+      // Check for duplicate routes.
+      // Otherwise, continue routing and check for cancellations/redirections.
+      [ActionTypes.ROUTE_TO_NEXT]({router: currentRouter, getState, dispatch, action, next}) {
 
         const { meta } = action;
         const { event } = action.payload;
@@ -140,6 +125,22 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
             ...action,
             type: ActionTypes.ROUTE_TO_WINDOW
           });
+        }
+
+        // Don't allow routing to the exact same location as current.
+        if (
+          currentRouter.current && currentRouter.current.location.href === meta.location.href &&
+          statesAreEqual(currentRouter.current.state, action.payload.state)
+        ) {
+          return undefined;
+        }
+
+        // Don't allow routing to the exact same location as next.
+        if (
+          currentRouter.next && currentRouter.next.location.href === meta.location.href &&
+          statesAreEqual(currentRouter.next.state, action.payload.state)
+        ) {
+          return undefined;
         }
 
         const result = next(action);
