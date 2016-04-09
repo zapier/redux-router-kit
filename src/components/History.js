@@ -13,7 +13,8 @@ const History = React.createClass({
   },
 
   shouldComponentUpdate({url, state}) {
-    return url !== this.props.url || !statesAreEqual(state, this.props.state);
+    return this.waitingUrl != null ||
+           url !== this.props.url || !statesAreEqual(state, this.props.state);
   },
 
   componentWillMount() {
@@ -65,7 +66,7 @@ const History = React.createClass({
   },
 
   componentDidUpdate() {
-    if (this.waitingUrl) {
+    if (this.waitingUrl != null) {
       if (this.waitingUrl === this.props.url && statesAreEqual(this.waitingState, this.props.state)) {
         this.finish();
       } else {

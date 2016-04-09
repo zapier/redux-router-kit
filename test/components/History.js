@@ -166,3 +166,23 @@ test('History pops state', t => {
   history.goBack();
   t.same(onChangeSpy.lastCall.args, ['/hello', {x: 1}]);
 });
+
+test('Allow cancelling a change', t => {
+  const node = document.createElement('div');
+  document.body.appendChild(node);
+  const history = createMemoryHistory();
+  const onChangeSpy = sinon.spy();
+  const onListenSpy = sinon.spy();
+  history.listen(onListenSpy);
+  render(
+    <History history={history} onChange={onChangeSpy} url="/"/>,
+    node
+  );
+  history.push({pathname: '/hello'});
+  render(
+    <History history={history} onChange={onChangeSpy} url="/"/>,
+    node
+  );
+  t.is(onListenSpy.callCount, 3);
+  t.is(onListenSpy.lastCall.args[0].pathname, '/');
+});
