@@ -70,7 +70,6 @@ const History = React.createClass({
       if (this.waitingUrl === this.props.url && statesAreEqual(this.waitingState, this.props.state)) {
         this.finish();
       } else {
-        this.finish(false);
         this.transition();
       }
       this.finish = null;
@@ -78,6 +77,15 @@ const History = React.createClass({
       this.waitingState = null;
     } else {
       this.transition();
+    }
+  },
+
+  componentWillReceiveProps({url, state}) {
+    // Cancel synchronously.
+    if (this.waitingUrl != null) {
+      if (this.waitingUrl !== url || !statesAreEqual(this.waitingState, state)) {
+        this.finish(false);
+      }
     }
   },
 
