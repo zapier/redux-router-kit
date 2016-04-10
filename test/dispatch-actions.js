@@ -1,5 +1,6 @@
 import test from 'ava';
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
+import sinon from 'sinon';
 
 import 'babel-core/register';
 
@@ -244,5 +245,33 @@ test('pick up in-flight promise', t => {
     .then(() => {
       const { router } = store.getState();
       t.is(router.current.url, '/one');
+    });
+});
+
+test('call onEnter, onLeave', t => {
+  const onEnterSpy = sinon.spy();
+  const onLeaveSpy = sinon.spy();
+  const store = createStore(reducer, applyMiddleware(
+    createRouterMiddleware({
+      routes: {
+        '/one': {
+          onEnter: onEnterSpy,
+          onLeave: onLeaveSpy
+        },
+        '/two': {}
+      }
+    })
+  ));
+  return Promise.resolve()
+    .then(() => {
+      return store.dispatch(routeTo('/one'));
+    })
+    .then(() => {
+      t.true(onEnterSpy.called);
+      t.false(onLeaveSpy.called);
+      return store.dispatch(routeTo('/two'));
+    })
+    .then(() => {
+      t.true(onLeaveSpy.called);
     });
 });
