@@ -38,6 +38,16 @@ const openWindow = (...args) => {
   }
 };
 
+const isOnlyHashChange = (router) => {
+  const { current, next } = router;
+  if (current && next) {
+    const currentPathAndQuery = `${current.location.origin}${current.location.pathname}${current.location.search}`;
+    const nextPathAndQuery = `${next.location.origin}${next.location.pathname}${next.location.search}`;
+    return currentPathAndQuery === nextPathAndQuery;
+  }
+  return false;
+};
+
 const routeMeta = (routeInfo) => {
 
   if (routeInfo && routeInfo.match) {
@@ -127,18 +137,31 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           });
         }
 
-        // Don't allow routing to the exact same location as current.
-        if (
-          currentRouter.current && currentRouter.current.location.href === meta.location.href &&
-          statesAreEqual(currentRouter.current.state, action.payload.state)
-        ) {
-          return undefined;
+        if (action.payload.exit && !isOnlyHashChange(currentRouter)) {
+          dispatch(Actions.cancelRoute());
+          return dispatch({
+            ...action,
+            type: ActionTypes.ROUTE_TO_EXIT
+          });
         }
 
         // Don't allow routing to the exact same location as next.
         if (
           currentRouter.next && currentRouter.next.location.href === meta.location.href &&
           statesAreEqual(currentRouter.next.state, action.payload.state)
+        ) {
+          return undefined;
+        }
+
+        // If there's a route in flight, auto cancel it.
+        if (currentRouter.next) {
+          dispatch(Actions.cancelRoute());
+        }
+
+        // Don't allow routing to the exact same location as current.
+        if (
+          currentRouter.current && currentRouter.current.location.href === meta.location.href &&
+          statesAreEqual(currentRouter.current.state, action.payload.state)
         ) {
           return undefined;
         }
@@ -231,7 +254,10 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         const { meta } = action;
 
         if (typeof window !== 'undefined') {
-          window.location.href = meta.location.href;
+          // Allow cancellations to update.
+          setTimeout(() => {
+            window.location.href = meta.location.href;
+          }, 0);
         }
       }
     };

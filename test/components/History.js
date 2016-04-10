@@ -167,7 +167,7 @@ test('History pops state', t => {
   t.same(onChangeSpy.lastCall.args, ['/hello', {x: 1}]);
 });
 
-test('Allow cancelling a change', t => {
+test('allow cancelling a change', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
   const history = createMemoryHistory();

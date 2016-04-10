@@ -13,6 +13,9 @@ const reducer = combineReducers({
 });
 
 const routes = ({
+  '/': {
+    name: 'home'
+  },
   '/todos': {
     name: 'todos',
     assign() {
@@ -26,6 +29,15 @@ const routes = ({
       }
     }
   },
+  '/one': {
+    name: 'one'
+  },
+  '/two': {
+    name: 'two'
+  },
+  '/three': {
+    name: 'three'
+  }
 });
 
 const createStoreWithMiddleware = compose(
@@ -155,4 +167,54 @@ test('dispatch to same as next url should be no-op', t => {
   store.dispatch(routeTo('/todos'));
   router = store.getState().router;
   t.is(router.next._routeId, routeId);
+});
+
+test('allow overwriting route', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return store.dispatch(routeTo('/one'))
+    .then(() => {
+      store.dispatch(routeTo('/two'));
+      const newResult = store.dispatch(routeTo('/three'));
+      return newResult;
+    })
+    .then(() => {
+      const router = store.getState().router;
+      t.is(router.next, null);
+      t.is(router.current.url, '/three');
+    });
+});
+
+test('allow overwriting route with previous', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return store.dispatch(routeTo('/one'))
+    .then(() => {
+      store.dispatch(routeTo('/two'));
+      const newResult = store.dispatch(routeTo('/one'));
+      const router = store.getState().router;
+      t.is(router.next, null);
+      return newResult;
+    })
+    .then(() => {
+      const router = store.getState().router;
+      t.is(router.next, null);
+      t.is(router.current.url, '/one');
+    });
+});
+
+test('allow exit to cancel previous route', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return store.dispatch(routeTo('/one'))
+    .then(() => {
+      store.dispatch(routeTo('/two'));
+      const newResult = store.dispatch(routeTo('/two', {
+        exit: true
+      }));
+      const router = store.getState().router;
+      t.is(router.next, null);
+      return newResult;
+    })
+    .then(() => {
+      const router = store.getState().router;
+      t.is(router.current.url, '/one');
+    });
 });
