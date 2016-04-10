@@ -143,13 +143,16 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           currentRouter.next && currentRouter.next.location.href === meta.location.href &&
           statesAreEqual(currentRouter.next.state, action.payload.state)
         ) {
-          // But send a MODIFY_ROUTE just in case something has changed.
-          dispatch({
-            type: ActionTypes.MODIFY_ROUTE,
-            payload: {
-              exit: !!action.payload.exit
-            }
-          });
+          // Unless we change `exit` flag, in which case we can modify
+          // the next route.
+          if (!!currentRouter.next.exit !== !!action.payload.exit) {
+            dispatch({
+              type: ActionTypes.MODIFY_ROUTE,
+              payload: {
+                exit: !!action.payload.exit
+              }
+            });
+          }
           return inFlightNext || Promise.resolve();
         }
 
