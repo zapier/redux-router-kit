@@ -8,53 +8,73 @@ const defaultState = {
 
 const undefinedAsNull = value => value === undefined ? null : value;
 
+const handlers = {
+
+  [ActionTypes.CANCEL_ROUTE](state) {
+    return {
+      ...state,
+      next: null
+    };
+  },
+
+  [ActionTypes.MODIFY_ROUTE](state, action) {
+    if (!state.next) {
+      return state;
+    }
+    const { payload } = action;
+    return {
+      ...state,
+      next: {
+        ...state.next,
+        exit: !!payload.exit
+      }
+    };
+  },
+
+  [ActionTypes.ROUTE_TO_NEXT](state, action) {
+    const { payload, meta } = action;
+
+    return {
+      ...state,
+      next: {
+        ...meta.assign,
+        _routeId: meta._routeId,
+        routeKey: meta.routeKey,
+        location: meta.location,
+        url: meta.url,
+        state: undefinedAsNull(payload.state),
+        replace: !!payload.replace,
+        exit: !!payload.exit
+      },
+      origin: state.origin || meta.location.origin
+    };
+  },
+
+  [ActionTypes.ROUTE_TO](state, action) {
+    const { payload, meta } = action;
+
+    return {
+      ...state,
+      previous: (!payload.replace && state.current) || state.previous,
+      current: {
+        ...meta.assign,
+        _routeId: meta._routeId,
+        routeKey: meta.routeKey,
+        location: meta.location,
+        url: meta.url,
+        state: undefinedAsNull(payload.state),
+        replace: !!payload.replace
+      },
+      next: null,
+      origin: state.origin || meta.location.origin
+    };
+  }
+};
+
 export default function reducer(state = defaultState, action) {
   if (action) {
-
-    if (action.type === ActionTypes.CANCEL_ROUTE) {
-
-      state = {
-        ...state,
-        next: null
-      };
-
-    } else if (action.type === ActionTypes.ROUTE_TO_NEXT) {
-
-      const { payload, meta } = action;
-
-      state = {
-        ...state,
-        next: {
-          ...meta.assign,
-          _routeId: meta._routeId,
-          routeKey: meta.routeKey,
-          location: meta.location,
-          url: meta.url,
-          state: undefinedAsNull(payload.state),
-          replace: !!payload.replace
-        },
-        origin: state.origin || meta.location.origin
-      };
-
-    } else if (action.type === ActionTypes.ROUTE_TO) {
-
-      const { payload, meta } = action;
-
-      state = {
-        ...state,
-        previous: (!payload.replace && state.current) || state.previous,
-        current: {
-          ...meta.assign,
-          _routeId: meta._routeId,
-          routeKey: meta.routeKey,
-          location: meta.location,
-          url: meta.url,
-          state: undefinedAsNull(payload.state),
-          replace: !!payload.replace
-        },
-        next: null,
-        origin: state.origin || meta.location.origin
-      };
+    if (handlers[action.type]) {
+      return handlers[action.type](state, action);
     }
   }
 

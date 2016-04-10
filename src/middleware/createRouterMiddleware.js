@@ -38,8 +38,7 @@ const openWindow = (...args) => {
   }
 };
 
-const isOnlyHashChange = (router) => {
-  const { current, next } = router;
+const isOnlyHashChange = (current, next) => {
   if (current && next) {
     const currentPathAndQuery = `${current.location.origin}${current.location.pathname}${current.location.search}`;
     const nextPathAndQuery = `${next.location.origin}${next.location.pathname}${next.location.search}`;
@@ -82,6 +81,8 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
     throw new Error('Must provide mapping from route strings to route objects.');
   }
 
+  let inFlightNext = null;
+
   return store => {
 
     const handlers = {
@@ -123,30 +124,18 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         const { event } = action.payload;
 
         if (event.defaultPrevented) {
-          return undefined;
+          return Promise.resolve();
         }
 
         if (isRightClick(event)) {
-          return undefined;
+          return Promise.resolve();
         }
 
         if (event.metaKey || event.ctrlKey || event.shiftKey) {
-          return dispatch({
+          return Promise.resolve(dispatch({
             ...action,
             type: ActionTypes.ROUTE_TO_WINDOW
-          });
-        }
-
-        if (action.payload.exit && !isOnlyHashChange(currentRouter)) {
-          if (currentRouter.next) {
-            if (currentRouter.next.location.href !== meta.location.href) {
-              dispatch(Actions.cancelRoute());
-            }
-          }
-          return dispatch({
-            ...action,
-            type: ActionTypes.ROUTE_TO_EXIT
-          });
+          }));
         }
 
         // Don't allow routing to the exact same location as next.
@@ -154,7 +143,14 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           currentRouter.next && currentRouter.next.location.href === meta.location.href &&
           statesAreEqual(currentRouter.next.state, action.payload.state)
         ) {
-          return undefined;
+          // But send a MODIFY_ROUTE just in case something has changed.
+          dispatch({
+            type: ActionTypes.MODIFY_ROUTE,
+            payload: {
+              exit: !!action.payload.exit
+            }
+          });
+          return inFlightNext || Promise.resolve();
         }
 
         // If there's a route in flight, auto cancel it.
@@ -167,7 +163,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           currentRouter.current && currentRouter.current.location.href === meta.location.href &&
           statesAreEqual(currentRouter.current.state, action.payload.state)
         ) {
-          return undefined;
+          return Promise.resolve();
         }
 
         const result = next(action);
@@ -179,7 +175,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         };
         const nextMatch = routeKeyToRouteValue(meta.routeKey, routes);
 
-        return Promise.resolve(result)
+        inFlightNext = Promise.resolve(result)
           // Handle onLeave for the current route.
           .then(() => {
             const { router } = getState();
@@ -215,16 +211,19 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
               batchedUpdates(() => {
                 dispatchResult = dispatch({
                   ...action,
-                  type: ActionTypes.ROUTE_TO
+                  type: router.next.exit ? ActionTypes.ROUTE_TO_EXIT : ActionTypes.ROUTE_TO
                 });
               });
             }
             return dispatchResult;
           });
+
+        return inFlightNext;
       },
 
       // Intercept actual route if unknown route.
       [ActionTypes.ROUTE_TO]({router, dispatch, next, action}) {
+        inFlightNext = null;
         const { meta } = action;
 
         const match = routeKeyToRouteValue(meta.routeKey, routes);
@@ -243,6 +242,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
       },
 
       [ActionTypes.ROUTE_TO_WINDOW]({action}) {
+        inFlightNext = null;
         const { meta } = action;
         const { event } = action.payload;
 
@@ -254,15 +254,47 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         openWindow(meta.location.href);
       },
 
-      [ActionTypes.ROUTE_TO_EXIT]({action}) {
+      [ActionTypes.ROUTE_TO_EXIT]({action, next, router}) {
+        inFlightNext = null;
         const { meta } = action;
 
+        // If we change back to ROUTE_TO here, we DO NOT RE-DISPATCH.
+        // If we did, we could loop back around.
+        // This logic could move to ROUTE_TO to avoid this, but it's nice to
+        // only worry about window here. Alternatively, we could add a flag to
+        // avoid looping, but that seems more confusing.
+
         if (typeof window !== 'undefined') {
-          // Allow cancellations to update.
-          setTimeout(() => {
+          if (isOnlyHashChange(router.current, meta)) {
+            // Browser wouldn't have reloaded this, so we won't either.
+            // Probably should add a `reload` option later to force this.
+            return next({
+              ...action,
+              type: ActionTypes.ROUTE_TO
+            });
+          } else if (isOnlyHashChange(window, meta)) {
+            // Need for force a change, because window is out of sync.
+            // Cancel may not have made it through yet to History.
+            window.location.hash = meta.location.hash;
+            window.location.reload();
+          } else {
             window.location.href = meta.location.href;
-          }, 0);
+          }
         }
+        else if (meta.url) {
+          // If we have a url and no window, then go ahead with ROUTE_TO.
+          // (Because origin matched anyway.)
+          return next({
+            ...action,
+            type: ActionTypes.ROUTE_TO
+          });
+        }
+        return undefined;
+      },
+
+      [ActionTypes.CANCEL_ROUTE]({action, next}) {
+        inFlightNext = null;
+        return next(action);
       }
     };
 

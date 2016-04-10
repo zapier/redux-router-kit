@@ -3,12 +3,13 @@ import test from 'ava';
 import 'babel-core/register';
 
 import reducer from 'redux-router-kit/src/reducer';
-import { ROUTE_TO_NEXT, ROUTE_TO } from 'redux-router-kit/src/ActionTypes';
+import { ROUTE_TO_NEXT, ROUTE_TO, MODIFY_ROUTE } from 'redux-router-kit/src/ActionTypes';
 
 const createRouteAction = (options) => ({
   type: options.type,
   payload: {
     replace: !!options.replace,
+    exit: !!options.exit,
     state: options.state
   },
   meta: {
@@ -153,4 +154,30 @@ test('replace', t => {
   }));
   t.is(state.current.url, '/users/joseph');
   t.is(state.previous.url, '/users');
+});
+
+test('put exit in state', t => {
+  let state = reducer();
+  state = reducer(state, createRouteToNextAction({
+    _routeId: 1,
+    url: '/users',
+    exit: true
+  }));
+  t.true(state.next.exit);
+});
+
+test('modify with exit', t => {
+  let state = reducer();
+  state = reducer(state, createRouteToNextAction({
+    _routeId: 1,
+    url: '/users'
+  }));
+  state = reducer(state, {
+    type: MODIFY_ROUTE,
+    payload: {
+      exit: true
+    }
+  });
+  t.is(state.next.url, '/users');
+  t.true(state.next.exit);
 });

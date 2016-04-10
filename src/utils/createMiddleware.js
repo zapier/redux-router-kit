@@ -1,3 +1,9 @@
+import ActionTypes from '../ActionTypes';
+
+const noPayloadActions = {
+  [ActionTypes.CANCEL_ROUTE]: true
+};
+
 const createMiddleware = ({getState, dispatch}, handlers) => {
 
   return next => {
@@ -8,7 +14,7 @@ const createMiddleware = ({getState, dispatch}, handlers) => {
         return next(action);
       }
 
-      if (!action.payload) {
+      if (!action.payload && !noPayloadActions[action.type]) {
         console.warn(`Ignoring routing action ${action.type} without payload.`);
         return undefined;
       }

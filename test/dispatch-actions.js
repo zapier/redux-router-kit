@@ -201,20 +201,48 @@ test('allow overwriting route with previous', t => {
     });
 });
 
-// test('allow exit to cancel previous route', t => {
-//   const store = createStoreWithMiddleware(reducer);
-//   return store.dispatch(routeTo('/one'))
-//     .then(() => {
-//       store.dispatch(routeTo('/two'));
-//       const newResult = store.dispatch(routeTo('/two', {
-//         exit: true
-//       }));
-//       const router = store.getState().router;
-//       t.is(router.next, null);
-//       return newResult;
-//     })
-//     .then(() => {
-//       const router = store.getState().router;
-//       t.is(router.current.url, '/one');
-//     });
-// });
+test('put exit in state and then exit', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return Promise.resolve()
+    .then(() => {
+      const result = store.dispatch(routeTo('/one', { exit: true }));
+      const { router } = store.getState();
+      t.true(router.next.exit);
+      return result;
+    })
+    .then(() => {
+      const { router } = store.getState();
+      t.is(router.next.url, '/one');
+    });
+});
+
+test('modify next route with exit', t => {
+  const store = createStoreWithMiddleware(reducer);
+  (
+    () => {
+      store.dispatch(routeTo('/one'));
+      const { router } = store.getState();
+      t.false(!!router.next.exit);
+    }
+  )();
+  (
+    () => {
+      store.dispatch(routeTo('/one', { exit: true }));
+      const { router } = store.getState();
+      t.true(router.next.exit);
+    }
+  )();
+});
+
+test('pick up in-flight promise', t => {
+  const store = createStoreWithMiddleware(reducer);
+  return Promise.resolve()
+    .then(() => {
+      store.dispatch(routeTo('/one'));
+      return store.dispatch(routeTo('/one'));
+    })
+    .then(() => {
+      const { router } = store.getState();
+      t.is(router.current.url, '/one');
+    });
+});
