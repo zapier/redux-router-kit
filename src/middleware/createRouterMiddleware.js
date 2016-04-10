@@ -138,7 +138,11 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         }
 
         if (action.payload.exit && !isOnlyHashChange(currentRouter)) {
-          dispatch(Actions.cancelRoute());
+          if (currentRouter.next) {
+            if (currentRouter.next.location.href !== meta.location.href) {
+              dispatch(Actions.cancelRoute());
+            }
+          }
           return dispatch({
             ...action,
             type: ActionTypes.ROUTE_TO_EXIT

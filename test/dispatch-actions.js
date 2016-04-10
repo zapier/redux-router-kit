@@ -201,20 +201,20 @@ test('allow overwriting route with previous', t => {
     });
 });
 
-test('allow exit to cancel previous route', t => {
-  const store = createStoreWithMiddleware(reducer);
-  return store.dispatch(routeTo('/one'))
-    .then(() => {
-      store.dispatch(routeTo('/two'));
-      const newResult = store.dispatch(routeTo('/two', {
-        exit: true
-      }));
-      const router = store.getState().router;
-      t.is(router.next, null);
-      return newResult;
-    })
-    .then(() => {
-      const router = store.getState().router;
-      t.is(router.current.url, '/one');
-    });
-});
+// test('allow exit to cancel previous route', t => {
+//   const store = createStoreWithMiddleware(reducer);
+//   return store.dispatch(routeTo('/one'))
+//     .then(() => {
+//       store.dispatch(routeTo('/two'));
+//       const newResult = store.dispatch(routeTo('/two', {
+//         exit: true
+//       }));
+//       const router = store.getState().router;
+//       t.is(router.next, null);
+//       return newResult;
+//     })
+//     .then(() => {
+//       const router = store.getState().router;
+//       t.is(router.current.url, '/one');
+//     });
+// });
