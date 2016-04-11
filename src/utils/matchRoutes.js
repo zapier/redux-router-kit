@@ -67,7 +67,11 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
     }
 
     const testPathname = pathPattern[0] === '/' ? pathname : remainingPathname;
-    const params = matchPathnameToPattern(testPathname, pathPattern, routeValue);
+    const params = (testPathname === '' && pathPattern === '.') ? (
+      {}
+    ) : (
+      matchPathnameToPattern(testPathname, pathPattern, routeValue)
+    );
 
     if (params) {
       const route = normalizeRoute(pathPattern, routeValue);

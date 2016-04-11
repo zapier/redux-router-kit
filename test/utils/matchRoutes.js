@@ -107,3 +107,54 @@ test('parent route', t => {
   }, '/todos');
   t.same(routeMatch.key, ['/todos']);
 });
+
+test('match index route', t => {
+  const routeMatch = matchRoutes({
+    '/todos': {
+      name: 'todos',
+      routes: {
+        '.': {
+          name: 'todos-index'
+        },
+        ':id': {
+          name: 'todo'
+        }
+      }
+    }
+  }, '/todos');
+  t.same(routeMatch.key, ['/todos', '.']);
+});
+
+test('match index route at root', t => {
+  const routeMatch = matchRoutes({
+    '/': {
+      name: 'root',
+      routes: {
+        '.': {
+          name: 'home'
+        },
+        'todos': {
+          name: 'todos'
+        }
+      }
+    }
+  }, '/');
+  t.same(routeMatch.key, ['/', '.']);
+});
+
+test('match unknown route at root', t => {
+  const routeMatch = matchRoutes({
+    '/': {
+      name: 'root',
+      routes: {
+        'todos': {
+          name: 'todos'
+        },
+        '*': {
+          name: 'unknown'
+        }
+      }
+    }
+  }, '/todo');
+  t.same(routeMatch.key, ['/', '*']);
+});
