@@ -88,9 +88,7 @@ const Router = React.createClass({
         const routeProps = {
           ...matchProps,
           route,
-          matchedRouteIndex,
-          // Deprecated
-          routeValue: route
+          matchedRouteIndex
         };
         if (React.isValidElement(childElement) || childElement === null) {
           routeProps.children = childElement;
@@ -110,15 +108,10 @@ const Router = React.createClass({
       }, null);
 
       if (element === null) {
-        const defaultProps = {
-          ...matchProps,
-          // deprecated
-          routeValue: matchedRoutes[matchedRoutes.length - 1]
-        };
         if (renderDefault) {
-          return renderDefault(defaultProps);
+          return renderDefault(matchProps);
         } else if (defaultComponent) {
-          return createElement(defaultComponent, defaultProps);
+          return createElement(defaultComponent, matchProps);
         }
       }
 
