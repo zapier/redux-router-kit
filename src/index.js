@@ -8,6 +8,7 @@ export { default as createRouterMiddleware } from './middleware/createRouterMidd
 export { default as mapUrlToRoute } from './utils/mapUrlToRoute';
 export { default as matchRoutes } from './utils/matchRoutes';
 export { default as routeKeyToRouteValue } from './utils/routeKeyToRouteValue';
+export { default as findRoutes } from './utils/findRoutes';
 
 export { default as RouterActions } from './Actions';
 export * from './Actions';
