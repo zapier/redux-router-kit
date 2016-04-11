@@ -80,7 +80,7 @@ const Router = React.createClass({
         return renderRoutes(matchProps);
       }
 
-      const element = matchedRoutes.reduceRight((childElement, route) => {
+      const element = matchedRoutes.reduceRight((childElement, route, matchedRouteIndex) => {
         const { component, components } = route;
         if (typeof component !== 'function' && (!component || typeof components !== 'object')) {
           return childElement;
@@ -88,6 +88,7 @@ const Router = React.createClass({
         const routeProps = {
           ...matchProps,
           route,
+          matchedRouteIndex,
           // Deprecated
           routeValue: route
         };
