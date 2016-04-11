@@ -63,18 +63,18 @@ test('dispatch routeTo', t => {
     });
 });
 
-// test('dispatch routeTo for nested route', t => {
-//   const store = createStoreWithMiddleware(reducer);
-//   store.dispatch(routeTo('/todos/123'))
-//     .then(() => {
-//       const router = store.getState().router;
-//       t.is(router.current.url, '/todos/123');
-//       t.same(router.current.params, {id: '123'});
-//       const routeList = findRoutes(routes, router.current.routeKey);
-//       t.is(routeList[0].name, 'todos');
-//       t.is(routeList[1].name, 'todo');
-//     });
-// });
+test('dispatch routeTo for nested route', t => {
+  const store = createStoreWithMiddleware(reducer);
+  store.dispatch(routeTo('/todos/123'))
+    .then(() => {
+      const router = store.getState().router;
+      t.is(router.current.url, '/todos/123');
+      t.same(router.current.params, {id: '123'});
+      const routeList = findRoutes(routes, router.current.routeKey);
+      t.is(routeList[0].name, 'todos');
+      t.is(routeList[1].name, 'todo');
+    });
+});
 
 test('dispatch routeTo with state', t => {
   const store = createStoreWithMiddleware(reducer);
@@ -254,24 +254,38 @@ test('call onEnter, onLeave', t => {
   const store = createStore(reducer, applyMiddleware(
     createRouterMiddleware({
       routes: {
-        '/one': {
+        '/a': {
           onEnter: onEnterSpy,
-          onLeave: onLeaveSpy
+          onLeave: onLeaveSpy,
+          routes: {
+            'nested1': {
+              onEnter: onEnterSpy,
+              onLeave: onLeaveSpy
+            },
+            'nested2': {
+            }
+          }
         },
-        '/two': {}
+        '/b': {}
       }
     })
   ));
   return Promise.resolve()
     .then(() => {
-      return store.dispatch(routeTo('/one'));
+      return store.dispatch(routeTo('/a/nested1'));
     })
     .then(() => {
-      t.true(onEnterSpy.called);
-      t.false(onLeaveSpy.called);
-      return store.dispatch(routeTo('/two'));
+      t.is(onEnterSpy.callCount, 2);
+      t.is(onLeaveSpy.callCount, 0);
+      return store.dispatch(routeTo('/a/nested2'));
     })
     .then(() => {
-      t.true(onLeaveSpy.called);
+      t.is(onEnterSpy.callCount, 2);
+      t.is(onLeaveSpy.callCount, 1);
+      return store.dispatch(routeTo('/b'));
+    })
+    .then(() => {
+      t.is(onEnterSpy.callCount, 2);
+      t.is(onLeaveSpy.callCount, 2);
     });
 });

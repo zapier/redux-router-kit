@@ -1,12 +1,12 @@
 import createMiddleware from '../utils/createMiddleware';
-import mapUrlToRoute from '../utils/mapUrlToRoute';
 import parseUrl from '../utils/parseUrl';
 import ActionTypes from '../ActionTypes';
 import routableUrl from '../utils/routableUrl';
 import Actions from '../Actions';
-import routeKeyToRouteValue from '../utils/routeKeyToRouteValue';
 import statesAreEqual from '../utils/statesAreEqual';
 import isRightClick from '../utils/isRightClick';
+import findRoutes from '../utils/findRoutes';
+import matchRoutes from '../utils/matchRoutes';
 
 const UNDEFINED_HREF = 'http://example.com/';
 
@@ -47,25 +47,45 @@ const isOnlyHashChange = (current, next) => {
   return false;
 };
 
-const routeMeta = (routeInfo) => {
+// Remove routes from the beginning of list a that are the same in route b.
+const removeSameParentRoutes = (a, b) => {
+  a = a || [];
+  b = b || [];
+  if (a.length > 0 && b.length > 0 && a[0].path === b[0].path) {
+    return removeSameParentRoutes(a.slice(1), b.slice(1));
+  }
+  return a;
+};
 
-  if (routeInfo && routeInfo.match) {
-    const { match } = routeInfo;
-    const extraState = typeof match.assign === 'function' ? (
-      match.assign({
-        name: match.name,
-        params: routeInfo.params,
-        query: routeInfo.query,
-        values: routeInfo.values
-      })
-    ) : undefined;
-    return {
-      name: match.name,
-      params: routeInfo.params,
-      query: routeInfo.query,
-      values: routeInfo.values,
-      ...(extraState || match.assign)
-    };
+const routeMeta = (match) => {
+
+  if (match && match.routes) {
+
+    return match.routes.reduce((currMeta, route) => {
+      const extraStateFromFunction = typeof route.assign === 'function' ? (
+        route.assign({
+          params: currMeta.params,
+          query: currMeta.query
+        })
+      ) : undefined;
+      const extraState = (
+        typeof extraStateFromFunction === 'object' &&
+        typeof extraStateFromFunction !== 'function' &&
+        extraStateFromFunction
+      ) || (
+        typeof route.assign === 'object' &&
+        route.assign
+      ) || {};
+      return {
+        name: route.name,
+        params: currMeta.params,
+        query: currMeta.query,
+        ...extraState
+      };
+    }, {
+      params: match.params,
+      query: match.query
+    });
   }
 
   return {};
@@ -95,9 +115,9 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
 
         const url = routableUrl(parsedUrl.href, router.origin || parsedUrl.origin);
 
-        const nextRouteInfo = url != null && mapUrlToRoute(url, routes);
+        const nextMatch = (url != null) && matchRoutes(routes, url);
 
-        const assign = routeMeta(nextRouteInfo);
+        const assign = routeMeta(nextMatch);
 
         return dispatch({
           type: ActionTypes.ROUTE_TO_NEXT,
@@ -110,7 +130,7 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
             location: parsedUrl,
             assign,
             _routeId: uniqueId(),
-            routeKey: nextRouteInfo && nextRouteInfo.route
+            routeKey: nextMatch && nextMatch.key
           }
         });
       },
@@ -176,7 +196,8 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         const cancelRoute = (...args) => {
           dispatch(Actions.cancelRoute(...args));
         };
-        const nextMatch = routeKeyToRouteValue(meta.routeKey, routes);
+        const nextRoutes = findRoutes(routes, meta.routeKey);
+        const currMatch = currentRouter.current && matchRoutes(routes, currentRouter.current.url);
 
         inFlightNext = Promise.resolve(result)
           // Handle onLeave for the current route.
@@ -184,12 +205,19 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
             const { router } = getState();
             if (router.next && router.next._routeId === meta._routeId) {
               if (router.current) {
-                const currRouteInfo = mapUrlToRoute(router.current.url, routes);
-                const currMatch = currRouteInfo && currRouteInfo.match;
-                if (currMatch) {
-                  if (currMatch.onLeave && typeof currMatch.onLeave === 'function') {
-                    return currMatch.onLeave({routeTo, cancelRoute, getState, dispatch, action, router});
-                  }
+
+                if (currMatch && currMatch.routes) {
+
+                  const currLeavingRoutes = removeSameParentRoutes(currMatch.routes, nextRoutes);
+
+                  return currLeavingRoutes.reduceRight((promise, route) => {
+                    if (route.onLeave && typeof route.onLeave === 'function') {
+                      return (promise || Promise.resolve()).then(() =>
+                        route.onLeave({routeTo, cancelRoute, getState, dispatch, action, router})
+                      );
+                    }
+                    return promise;
+                  }, undefined);
                 }
               }
             }
@@ -199,8 +227,18 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
           .then(() => {
             const { router } = getState();
             if (router.next && router.next._routeId === meta._routeId) {
-              if (nextMatch && nextMatch.onEnter && typeof nextMatch.onEnter === 'function') {
-                return nextMatch.onEnter({routeTo, cancelRoute, getState, dispatch, action, router});
+              if (nextRoutes) {
+
+                const nextEnteringRoutes = removeSameParentRoutes(nextRoutes, currMatch && currMatch.routes);
+
+                return nextEnteringRoutes.reduce((promise, route) => {
+                  if (route.onEnter && typeof route.onEnter === 'function') {
+                    return (promise || Promise.resolve()).then(() =>
+                      route.onEnter({routeTo, cancelRoute, getState, dispatch, action, router})
+                    );
+                  }
+                  return promise;
+                }, undefined);
               }
             }
             return undefined;
@@ -229,11 +267,11 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
         inFlightNext = null;
         const { meta } = action;
 
-        const match = routeKeyToRouteValue(meta.routeKey, routes);
+        const nextRoutes = findRoutes(routes, meta.routeKey);
 
         // Only allow exiting if we have already routed, to prevent loops.
         if (router.current) {
-          if (!match) {
+          if (!nextRoutes) {
             return dispatch({
               ...action,
               type: ActionTypes.ROUTE_TO_EXIT

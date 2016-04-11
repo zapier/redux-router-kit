@@ -93,3 +93,17 @@ test('absolute nested route', t => {
 
   t.same(routeMatch.key, ['/things', '/things/:id']);
 });
+
+test('parent route', t => {
+  const routeMatch = matchRoutes({
+    '/todos': {
+      name: 'todos',
+      routes: {
+        ':id': {
+          name: 'todo'
+        }
+      }
+    }
+  }, '/todos');
+  t.same(routeMatch.key, ['/todos']);
+});

@@ -1,18 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import routeKeyToRouteValue from '../utils/routeKeyToRouteValue';
-
-const componentFromRouteValue = routeValue => {
-  if (routeValue) {
-    if (routeValue.component) {
-      return routeValue.component;
-    }
-    if (typeof routeValue === 'function') {
-      return routeValue;
-    }
-  }
-  return undefined;
-};
+import findRoutes from '../utils/findRoutes';
 
 const Router = React.createClass({
 
@@ -30,15 +18,22 @@ const Router = React.createClass({
 
     renderComponent: PropTypes.func,
 
-    renderRoute: PropTypes.func
+    renderRoutes: PropTypes.func
   },
 
-  routeValue() {
+  getDefaultProps() {
+    return {
+      createElement: React.createElement
+    };
+  },
+
+  matchedRoutes() {
     const { router, routes } = this.props;
 
     if (router.current) {
-      return routeKeyToRouteValue(router.current.routeKey, routes) || null;
+      return findRoutes(routes, router.current.routeKey) || null;
     }
+
     return null;
   },
 
@@ -47,43 +42,81 @@ const Router = React.createClass({
     const {
       router,
       renderBeforeCurrent,
-      renderRoute, renderComponent, renderDefault, renderNotFound,
-      defaultComponent, notFoundComponent
+      renderRoutes, renderComponent, renderDefault, renderNotFound,
+      defaultComponent, notFoundComponent: NotFound
     } = this.props;
 
-    if (router.current) {
-      const routeValue = this.routeValue();
+    const createElement = renderComponent || this.props.createElement;
 
-      const componentProps = {
-        ...router.current.params || {},
+    if (router.current) {
+
+      const matchedRoutes = this.matchedRoutes();
+
+      const baseProps = {
         query: router.current.query || {},
-        router: router,
-        routeValue
+        router
       };
 
-      if (renderRoute) {
-        return renderRoute(componentProps);
-      }
+      if (!matchedRoutes) {
 
-      const Component = routeValue ? (
-        componentFromRouteValue(routeValue) || defaultComponent
-      ) : notFoundComponent;
-
-      if (Component) {
-        if (renderComponent) {
-          return renderComponent(Component, componentProps);
+        if (renderNotFound) {
+          return renderNotFound(baseProps);
         }
 
-        return <Component {...componentProps}/>;
+        if (NotFound) {
+          return <NotFound {...baseProps}/>;
+        }
+
+        return null;
       }
 
-      if (!routeValue && renderNotFound) {
-        return renderNotFound(componentProps);
+      const matchProps = {
+        ...router.current.params || {},
+        ...baseProps,
+        matchedRoutes
+      };
+
+      if (renderRoutes) {
+        return renderRoutes(matchProps);
       }
 
-      if (renderDefault) {
-        return renderDefault(componentProps);
+      const element = matchedRoutes.reduceRight((childElement, route) => {
+        const { component, components } = route;
+        if (typeof component !== 'function' && (!component || typeof components !== 'object')) {
+          return childElement;
+        }
+        const routeProps = {
+          ...matchProps,
+          route,
+          // Deprecated
+          routeValue: route
+        };
+        if (React.isValidElement(childElement) || childElement === null) {
+          routeProps.children = childElement;
+        } else if (childElement) {
+          Object.keys(childElement).forEach(key => {
+            routeProps[key] = childElement[key];
+          });
+        }
+        if (component) {
+          return createElement(component, routeProps);
+        }
+        return Object.keys(components).reduce((elements, key) => {
+          elements[key] = createElement(components[key], {
+            key, ...routeProps
+          });
+        }, {});
+      }, null);
+
+      if (element === null) {
+        if (renderDefault) {
+          return renderDefault(matchProps);
+        } else if (defaultComponent) {
+          return createElement(defaultComponent, matchProps);
+        }
       }
+
+      return element;
     }
 
     if (renderBeforeCurrent) {

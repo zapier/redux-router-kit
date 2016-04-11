@@ -73,7 +73,10 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
       const route = normalizeRoute(pathPattern, routeValue);
       const nextResult = extendResult(result, pathPattern, route, params);
       if (route.routes) {
-        return deepMatchRoutes(route.routes, pathname, '', nextResult);
+        const deeperMatch = deepMatchRoutes(route.routes, pathname, '', nextResult);
+        if (deeperMatch) {
+          return deeperMatch;
+        }
       }
       return nextResult;
     }
@@ -101,6 +104,14 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
 };
 
 const matchRoutes = (routes, url) => {
+
+  if (!routes || typeof routes !== 'object') {
+    throw new Error('matchRoutes requires routes to be an object.');
+  }
+
+  if (typeof url !== 'string') {
+    throw new Error('matchRotes requires url to be a string.');
+  }
 
   const urlWithQueryString = url.split('#')[0];
   const pathname = urlWithQueryString.split('?')[0];

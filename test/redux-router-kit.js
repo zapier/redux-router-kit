@@ -155,3 +155,107 @@ test('can throw exception', t => {
       t.true(hadException);
     });
 });
+
+test('can render nested routes', t => {
+
+  const node = document.createElement('div');
+  document.body.appendChild(node);
+
+  const TodoApp = React.createClass({
+    render() {
+      return <div>{this.props.children}</div>;
+    }
+  });
+
+  const TodoEditor = React.createClass({
+    render() {
+      return <div className="todo">{this.props.id}</div>;
+    }
+  });
+
+  const routes = {
+    '/todos': {
+      component: TodoApp,
+      routes: {
+        ':id': {
+          component: TodoEditor
+        }
+      }
+    }
+  };
+
+  const createStoreWithMiddleware = compose(
+    applyMiddleware(
+      createRouterMiddleware({routes})
+    )
+  )(createStore);
+
+  const history = createMemoryHistory();
+  const store = createStoreWithMiddleware(reducer);
+
+  render(
+    <Provider store={store}>
+      <RouterContainer routes={routes} history={history}/>
+    </Provider>,
+    node
+  );
+
+  return store.dispatch(routeTo('/todos/123'))
+    .then(() => {
+      const todoNodes = node.getElementsByClassName('todo');
+      t.ok(todoNodes);
+      t.is(todoNodes[0].textContent, '123');
+    });
+});
+
+test('can render nested routes with named components', t => {
+
+  const node = document.createElement('div');
+  document.body.appendChild(node);
+
+  const TodoApp = React.createClass({
+    render() {
+      return <div>{this.props.todo}</div>;
+    }
+  });
+
+  const TodoEditor = React.createClass({
+    render() {
+      return <div className="todo">{this.props.id}</div>;
+    }
+  });
+
+  const routes = {
+    '/todos': {
+      components: {todo: TodoApp},
+      routes: {
+        ':id': {
+          component: TodoEditor
+        }
+      }
+    }
+  };
+
+  const createStoreWithMiddleware = compose(
+    applyMiddleware(
+      createRouterMiddleware({routes})
+    )
+  )(createStore);
+
+  const history = createMemoryHistory();
+  const store = createStoreWithMiddleware(reducer);
+
+  render(
+    <Provider store={store}>
+      <RouterContainer routes={routes} history={history}/>
+    </Provider>,
+    node
+  );
+
+  return store.dispatch(routeTo('/todos/123'))
+    .then(() => {
+      const todoNodes = node.getElementsByClassName('todo');
+      t.ok(todoNodes);
+      t.is(todoNodes[0].textContent, '123');
+    });
+});
