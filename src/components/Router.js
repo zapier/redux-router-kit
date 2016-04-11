@@ -109,10 +109,15 @@ const Router = React.createClass({
       }, null);
 
       if (element === null) {
+        const defaultProps = {
+          ...matchProps,
+          // deprecated
+          routeValue: matchedRoutes[matchedRoutes.length - 1]
+        };
         if (renderDefault) {
-          return renderDefault(matchProps);
+          return renderDefault(defaultProps);
         } else if (defaultComponent) {
-          return createElement(defaultComponent, matchProps);
+          return createElement(defaultComponent, defaultProps);
         }
       }
 
