@@ -338,6 +338,7 @@ test('fetch async routes', t => {
       t.true(routesChangedSpy.called);
       const { router } = store.getState();
       t.is(router.current.url, '/todos/123');
+      t.is(router.current.params.id, '123');
       t.is(router.current.name, 'todo');
     });
 });
