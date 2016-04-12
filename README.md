@@ -159,7 +159,7 @@ Route mapping object. See the examples above.
 
 If there is no current route, this function will be called.
 
-### `render{router, query, params, matchedRoutes}`
+### `render({router, query, params, matchedRoutes})`
 
 If you'd like to take control of all rendering for routes, pass in this function. No other rendering functions will be called. If no routes match, then `matchedRoutes` will be `null`.
 
@@ -395,7 +395,7 @@ const routes = {
 }
 ```
 
-The result of the fetch will modify the routes in the middleware. If you need the routing table outside middleware, you can listen to changes.
+The result of the fetch will be used in place of that route. The routing table in middleware will be modified with the new route, and the url will be retried against the new routing table. (And any nested async routes will also be fetched.) If you need the routing table outside middleware, you can listen to changes.
 
 ```js
 const routerMiddleware = createRouterMiddleware({routes});
