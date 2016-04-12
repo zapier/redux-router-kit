@@ -377,3 +377,56 @@ const store = createStore(
   )
 );
 ```
+
+## Async route loading
+
+To load routes asynchronously, just add a `fetch` property to your route.
+
+```js
+const routes = {
+  '/': HomePage,
+  '/todos': TodoApp,
+  '/developer': {
+    // This is a big page, and we don't want it loaded for everyone.
+    fetch() {
+      return System.import('developerRoutes');
+    }
+  }
+}
+```
+
+The result of the fetch will modify the routes in the middleware. If you need the routing table outside middleware, you can listen to changes.
+
+```js
+const routerMiddleware = createRouterMiddleware({routes});
+
+const store = createStore(
+  reducer,
+  applyMiddleware(
+    routerMiddleware
+  )
+);
+
+routerMiddleware.onRoutesChanged(routes => {
+  // do something with these routes, like pass them to components or other middleware that need them
+});
+```
+
+If you'd like to be in control of fetching routes, you can pass a `fetchRoute` function into the middleware.
+
+```js
+const routes = {
+  '/': HomePage,
+  '/todos': TodoApp,
+  '/developer': {
+    // Can be any truthy value.
+    fetch: true
+  }
+}
+
+const fetchRoute = route => {
+  // Return fetched route.
+};
+
+const routerMiddleware = createRouterMiddleware({routes, fetchRoute});
+```
