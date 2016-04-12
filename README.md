@@ -81,7 +81,7 @@ ReactDOM.render(
 );
 ```
 
-## Nested routes
+## Nested routes, onLeave/onEnter
 
 ```js
 const Layout = ({children}) => (
@@ -121,8 +121,24 @@ const routes = {
           '.': {
             component: TodoList
           },
+          'new': {
+            onEnter({routeTo}) {
+              // This might be a terrible example, if this is slow.
+              return createTodo()
+                .then(todo => {
+                  routeTo(`/todos/${todo.id}`);
+                })
+            }
+          },
           ':id': {
-            component: TodoItem
+            component: TodoItem,
+            onLeave({router, cancelRoute, getState, dispatch}) {
+              const todo = getState().todos[router.current.params.id];
+              if (!todo.isSaved) {
+                cancelRoute();
+                dispatch(notifyToSaveTodo());
+              }
+            }
           }
         }
       }
