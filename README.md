@@ -430,3 +430,7 @@ const fetchRoute = route => {
 
 const routerMiddleware = createRouterMiddleware({routes, fetchRoute});
 ```
+
+### Async route loading state
+
+While loading async routes, `router.fetch` will be set in state. Because routes aren't yet loaded, the params/etc. will be incomplete.
