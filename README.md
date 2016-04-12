@@ -139,17 +139,6 @@ The RouterContainer listens to routing state changes and delegates its props to 
 
 Route mapping object. See the examples above.
 
-    router: PropTypes.object.isRequired,
-    routes: PropTypes.object.isRequired,
-
-    render: PropTypes.func,
-    renderBeforeCurrent: PropTypes.func,
-    renderNotFound: PropTypes.func,
-    renderDefault: PropTypes.func,
-    renderRoot: PropTypes.func,
-    renderComponent: PropTypes.func,
-    renderRoutes: PropTypes.func
-
 ### `renderBeforeCurrent({router})`
 
 If there is no current route, this function will be called.
