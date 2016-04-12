@@ -2,17 +2,19 @@
 
 [![travis](https://travis-ci.org/zapier/redux-router-kit.svg?branch=master)](https://travis-ci.org/zapier/redux-router-kit)
 
-Redux Router Kit aims to be a _relatively_ minimalistic router that fits well with Redux and React. Some basics are
-built-in, but you can stitch together its pieces for a customized solution. It provides:
+Redux Router Kit is a routing solution for React that leverages Redux to store routing and transition states and enable powerful middleware and `connect`-powered components.
 
-- Redux action types for routing.
-- Redux action creators for routing.
-- Redux middleware for some handling of routes, for example onEnter and onLeave hooks.
-- Redux reducer for adding routing information to the store state.
-- Some utilities, including matching URLs to routes.
-- A History component that abstracts the browser's history as a React component.
-- A Router component that does maps routes to components.
-- Some other etc.
+## Features
+
+- Routing state lives in the store just like any other state.
+- Redux middleware has full access to routing and transition state along with your other store state.
+- The built-in onLeave/onEnter hooks have access to store state and `dispatch`. onLeave/onEnter hooks can easily see the current and next routing state.
+- Use `connect` to grab routing state anywhere in your component tree, just like other Redux store state.
+- Because transition states live in the store, you can render transition states or otherwise react to transition states in your React components.
+- Fetching routes asynchronously also exposes state in the store.
+- Even though routes can be fetched asynchronously, you can still easily work with the currently available routes synchronously.
+- Fall-through to server rendering for unmatched routes.
+- Ability to force server-rendering when needed.
 
 ## Install
 
@@ -20,7 +22,7 @@ built-in, but you can stitch together its pieces for a customized solution. It p
 npm install redux-router-kit --save
 ```
 
-## Basic Usage
+## Basic usage
 
 ```js
 import ReactDOM from 'react-dom';
@@ -29,9 +31,20 @@ import {
   routerReducer, createRouterMiddleware, RouterContainer
 } from 'redux-router-kit';
 
-import HomePage from './components/HomePage';
-import TodoApp from './components/TodoApp';
+const HomePage = () => (
+  <div>Home!</div>
+);
 
+// Params are automatically passed as props.
+const TodoApp = ({id}) => (
+  id ? (
+    <div>Todo: {id}</div>
+  ) : (
+    <div>Todos: {/* list todos */}</div>
+  )
+);
+
+// You can point route paths directly to components in simple cases.
 const routes = {
   '/': HomePage,
   '/todos': TodoApp,
@@ -63,4 +76,91 @@ ReactDOM.render(
   </Provider>
   document.getElementById('app')
 );
+```
+
+## Nested routes
+
+```js
+const Layout = ({children}) => (
+  <div>
+    <header>The Header</header>
+    <div>{children}</div>
+  </div>
+);
+
+const HomePage = () => (
+  <div>Home!</div>
+);
+
+const TodoApp = ({children}) => (
+  <div>{children}</div>
+);
+
+const TodoList = () => (
+  <div>Todos: {/* list todos */}</div>
+);
+
+const TodoItem = ({id}) => (
+  <div>Todo: {id}</div>
+);
+
+const routes = {
+  '/': {
+    component: Layout,
+    routes: {
+      // This is the "index" route. (Like a current directory.)
+      '.': {
+        component: HomePage
+      },
+      '/todos': {
+        component: TodoApp,
+        routes: {
+          '.': {
+            component: TodoList
+          },
+          ':id': {
+            component: TodoItem
+          }
+        }
+      }
+    }
+  }
+};
+```
+
+## Links
+
+When you use `RouterContainer`, it responds to click/touch events so routing actions are automatically triggered. So you don't have to use a special `<Link>` component. A normal `<a>` will work just fine.
+
+## Routing actions
+
+If you do want to manually trigger routing actions, you can either manually wire up the action with `connect`:
+
+```js
+import { routeTo } from 'redux-router-kit';
+
+const AddTodoButton = ({routeTo}) => (
+  <button onClick={() => routeTo('/todos/new')}>Add New Todo</button>
+);
+
+const ConnectedAddTodoButton = connect(
+  null,
+  (dispatch) => {
+    routeTo(..args) {
+      dispatch(routeTo(...args));
+    }
+  }
+)(AddTodoButton);
+```
+
+Or you can use the included `connectRouterActions` to add the actions as props.
+
+```js
+import { connectRouterActions } from 'redux-router-kit';
+
+const AddTodoButton = ({routeTo}) => (
+  <button onClick={() => routeTo('/todos/new')}>Add New Todo</button>
+);
+
+const ConnectedAddTodoButton = connectRouterActions(AddTodoButton);
 ```
