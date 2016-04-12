@@ -60,8 +60,7 @@ const Router = React.createClass({
       const matchProps = {
         ...baseProps,
         matchedRoutes,
-        params: router.current.params,
-        ...router.current.params || {},
+        params: router.current.params
       };
 
       if (render) {

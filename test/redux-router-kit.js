@@ -169,7 +169,7 @@ test('can render nested routes', t => {
 
   const TodoEditor = React.createClass({
     render() {
-      return <div className="todo">{this.props.id}</div>;
+      return <div className="todo">{this.props.params.id}</div>;
     }
   });
 
@@ -221,7 +221,7 @@ test('can render nested routes with named components', t => {
 
   const TodoEditor = React.createClass({
     render() {
-      return <div className="todo">{this.props.id}</div>;
+      return <div className="todo">{this.props.params.id}</div>;
     }
   });
 

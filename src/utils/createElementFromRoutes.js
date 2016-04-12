@@ -14,8 +14,6 @@ const createElementFromRoutes = ({
       return childElement;
     }
     const routeProps = {
-      // Going to deprecate this.
-      ...router.current.params,
       query,
       params: router.current.params,
       router,
