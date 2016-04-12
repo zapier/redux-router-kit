@@ -7,6 +7,7 @@ import statesAreEqual from '../utils/statesAreEqual';
 import isRightClick from '../utils/isRightClick';
 import findRoutes from '../utils/findRoutes';
 import matchRoutes from '../utils/matchRoutes';
+import cloneRoutesForKey from '../utils/cloneRoutesForKey';
 
 const UNDEFINED_HREF = 'http://example.com/';
 
@@ -95,21 +96,79 @@ const noOpBatchedUpdates = (cb) => {
   cb();
 };
 
-const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = {}) => {
+const createRouterMiddleware = ({
+  routes,
+  batchedUpdates = noOpBatchedUpdates,
+  fetchRoute: fetchRouteFn = (route) => {
+    console.error('No fetchRoute function provided for route:', route);
+    return route;
+  }
+} = {}) => {
 
   if (!routes || !(typeof routes === 'object')) {
     throw new Error('Must provide mapping from route strings to route objects.');
   }
 
+  const routeListeners = [];
+
+  const emitRoutesChanged = () => routeListeners.forEach(handler => handler(routes));
+
+  const setRoutes = (newRoutes) => {
+    routes = newRoutes;
+    emitRoutesChanged();
+  };
+
+  const fetchRoute = (route) => {
+    if (typeof route.fetch === 'function') {
+      return Promise.resolve(route.fetch());
+    }
+    return Promise.resolve(fetchRouteFn(route));
+  };
+
+  const fetchAndUpdateRoutes = (url) => {
+    const match = matchRoutes(routes, url);
+    if (match && match.routes) {
+      // Find the new route.
+      let matchedRoutes = findRoutes(routes, match.key);
+      if (matchedRoutes) {
+        const lastRoute = matchedRoutes[matchedRoutes.length - 1];
+        if (lastRoute.fetch) {
+          return fetchRoute(lastRoute)
+            .then((resultRoute) => {
+              // Make sure we still have a place to put this.
+              matchedRoutes = findRoutes(routes, match.key);
+              if (!matchedRoutes) {
+                return undefined;
+              }
+              const newRoutes = cloneRoutesForKey(routes, match.key);
+              const newRoute = {
+                ...resultRoute,
+                fetch: undefined
+              };
+              const lastKey = match.key[match.key.length - 1];
+              const parentRoutes = findRoutes(newRoutes, match.key.slice(0, match.key.length - 1)) || [];
+              const parentContainer = parentRoutes.length > 0 ? (
+                parentRoutes[parentRoutes.length - 1].routes
+              ) : newRoutes;
+              parentContainer[lastKey] = newRoute;
+              setRoutes(newRoutes);
+              return fetchAndUpdateRoutes(url);
+            });
+        }
+      }
+    }
+    return Promise.resolve();
+  };
+
   let inFlightNext = null;
 
-  return store => {
+  const middleware = store => {
 
     const handlers = {
 
       // Normalize the action against current href and origin.
       // Dispatch action for next route.
-      [ActionTypes.ROUTE_TO_INIT]({router, dispatch, action}) {
+      [ActionTypes.ROUTE_TO_INIT]({router, dispatch, action, getState}) {
 
         const parsedUrl = parseUrl(action.payload.href, router.href || baseUrl);
 
@@ -119,7 +178,9 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
 
         const assign = routeMeta(nextMatch);
 
-        return dispatch({
+        const routeId = uniqueId();
+
+        const nextAction = {
           type: ActionTypes.ROUTE_TO_NEXT,
           payload: {
             ...action.payload,
@@ -129,10 +190,43 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
             url,
             location: parsedUrl,
             assign,
-            _routeId: uniqueId(),
+            _routeId: routeId,
             routeKey: nextMatch && nextMatch.key
           }
-        });
+        };
+
+        if (nextMatch && nextMatch.routes) {
+          const leafRoute = nextMatch.routes[nextMatch.routes.length - 1];
+          if (leafRoute.fetch) {
+            const fetchAction = {...nextAction};
+            fetchAction.type = ActionTypes.ROUTE_TO_FETCH;
+            dispatch(fetchAction);
+            return fetchAndUpdateRoutes(url)
+              .then(() => {
+                const nextRouter = getState().router;
+                if (nextRouter.fetch && nextRouter.fetch._routeId === routeId) {
+                  const newNextMatch = (url != null) && matchRoutes(routes, url);
+                  const newAssign = routeMeta(newNextMatch);
+                  const newNextAction = {
+                    ...nextAction,
+                    meta: {
+                      ...nextAction.meta,
+                      assign: newAssign,
+                      routeKey: newNextMatch && newNextMatch.key
+                    }
+                  };
+                  dispatch({
+                    type: ActionTypes.ROUTE_TO_FETCH,
+                    payload: null
+                  });
+                  return dispatch(newNextAction);
+                }
+                return undefined;
+              });
+          }
+        }
+
+        return dispatch(nextAction);
       },
 
       // Check for cancelling events.
@@ -341,6 +435,25 @@ const createRouterMiddleware = ({routes, batchedUpdates = noOpBatchedUpdates} = 
 
     return createMiddleware(store, handlers);
   };
+
+  middleware.setRoutes = setRoutes;
+
+  middleware.onRoutesChanged = handler => {
+    routeListeners.push(handler);
+
+    const unsubscribe = () => {
+      for (let i = 0; i < routeListeners.length; i++) {
+        if (routeListeners[i] === handler) {
+          routeListeners.splice(i, 1);
+          break;
+        }
+      }
+    };
+
+    return unsubscribe;
+  };
+
+  return middleware;
 };
 
 export default createRouterMiddleware;

@@ -13,7 +13,7 @@ const reducer = combineReducers({
   router: routerReducer
 });
 
-const routes = ({
+const createRoutes = () => ({
   '/': {
     name: 'home'
   },
@@ -43,12 +43,19 @@ const routes = ({
 
 const createStoreWithMiddleware = compose(
   applyMiddleware(
-    createRouterMiddleware({routes})
+    createRouterMiddleware({routes: createRoutes()})
   )
 )(createStore);
 
+const createStoreWithRoutes = routes => {
+  return createStore(reducer, applyMiddleware(
+    createRouterMiddleware({routes})
+  ));
+};
+
 test('dispatch routeTo', t => {
-  const store = createStoreWithMiddleware(reducer);
+  const routes = createRoutes();
+  const store = createStoreWithRoutes(routes);
   const result = store.dispatch(routeTo('/todos'));
   let router = store.getState().router;
   t.is(router.next.url, '/todos');
@@ -64,7 +71,8 @@ test('dispatch routeTo', t => {
 });
 
 test('dispatch routeTo for nested route', t => {
-  const store = createStoreWithMiddleware(reducer);
+  const routes = createRoutes();
+  const store = createStoreWithRoutes(routes);
   store.dispatch(routeTo('/todos/123'))
     .then(() => {
       const router = store.getState().router;
@@ -287,5 +295,49 @@ test('call onEnter, onLeave', t => {
     .then(() => {
       t.is(onEnterSpy.callCount, 2);
       t.is(onLeaveSpy.callCount, 2);
+    });
+});
+
+test('fetch async routes', t => {
+  const fetchTodosRoute = () => {
+    return Promise.resolve({
+      routes: {
+        ':id': {
+          name: 'todo'
+        }
+      }
+    });
+  };
+
+  const routes = {
+    '/todos': {
+      fetch: fetchTodosRoute
+    }
+  };
+
+  const middleware = createRouterMiddleware({
+    routes
+  });
+
+  const routesChangedSpy = sinon.spy();
+
+  middleware.onRoutesChanged(routesChangedSpy);
+
+  const store = createStore(reducer, applyMiddleware(
+    middleware
+  ));
+
+  return Promise.resolve()
+    .then(() => {
+      const result = store.dispatch(routeTo('/todos/123'));
+      const { router } = store.getState();
+      t.is(router.fetch.url, '/todos/123');
+      return result;
+    })
+    .then(() => {
+      t.true(routesChangedSpy.called);
+      const { router } = store.getState();
+      t.is(router.current.url, '/todos/123');
+      t.is(router.current.name, 'todo');
     });
 });

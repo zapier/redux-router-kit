@@ -50,6 +50,33 @@ const handlers = {
     };
   },
 
+  [ActionTypes.ROUTE_TO_FETCH](state, action) {
+    const { payload, meta } = action;
+
+    if (!payload) {
+      return {
+        ...state,
+        fetch: null
+      };
+    }
+
+    return {
+      ...state,
+      next: null,
+      fetch: {
+        ...meta.assign,
+        _routeId: meta._routeId,
+        routeKey: meta.routeKey,
+        location: meta.location,
+        url: meta.url,
+        state: undefinedAsNull(payload.state),
+        replace: !!payload.replace,
+        exit: !!payload.exit
+      },
+      origin: state.origin || meta.location.origin
+    };
+  },
+
   [ActionTypes.ROUTE_TO](state, action) {
     const { payload, meta } = action;
 

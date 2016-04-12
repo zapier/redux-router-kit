@@ -43,6 +43,10 @@ const compiledRouteMatcher = pathPattern => {
 };
 
 const matchPathnameToPattern = (pathname, pathPattern) => {
+  // Index match.
+  if (pathname === '' && pathPattern === '.') {
+    return {};
+  }
   const matchRoute = compiledRouteMatcher(pathPattern);
   return matchRoute(pathname);
 };
@@ -67,11 +71,7 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
     }
 
     const testPathname = pathPattern[0] === '/' ? pathname : remainingPathname;
-    const params = (testPathname === '' && pathPattern === '.') ? (
-      {}
-    ) : (
-      matchPathnameToPattern(testPathname, pathPattern, routeValue)
-    );
+    const params = matchPathnameToPattern(testPathname, pathPattern);
 
     if (params) {
       const route = normalizeRoute(pathPattern, routeValue);
@@ -85,7 +85,7 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
       return nextResult;
     }
 
-    if (routeValue.routes) {
+    if (routeValue.routes || routeValue.fetch) {
       if (pathPattern.charAt(pathPattern.length - 1) !== '*') {
         const trailingSlash = pathPattern.charAt(pathPattern.length - 1) === '/' ? '' : '/';
         const wildPathPattern = `${pathPattern}${trailingSlash}:__remainingPathnames__*`;
@@ -98,7 +98,12 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
           const newRemainingPathname = newRemainingPathnames.join('/');
           const route = normalizeRoute(pathPattern, routeValue);
           const nextResult = extendResult(result, pathPattern, route, otherParams);
-          return deepMatchRoutes(route.routes, pathname, newRemainingPathname, nextResult);
+          if (routeValue.routes) {
+            return deepMatchRoutes(route.routes, pathname, newRemainingPathname, nextResult);
+          } else {
+            // Fetch result.
+            return nextResult;
+          }
         }
       }
     }
