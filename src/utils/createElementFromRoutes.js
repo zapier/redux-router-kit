@@ -14,10 +14,12 @@ const createElementFromRoutes = ({
       return childElement;
     }
     const routeProps = {
+      // Going to deprecate this.
+      ...router.current.params,
       query,
+      params: router.current.params,
       router,
       matchedRoutes,
-      ...router.current.params,
       route,
       matchedRouteIndex,
       ...elementToProps(childElement)

@@ -16,6 +16,10 @@ Redux Router Kit is a routing solution for React that leverages Redux to store r
 - Fall-through to server rendering for unmatched routes.
 - Ability to force server-rendering when needed.
 
+## Why not React Router?
+
+If the features above aren't useful, by all means, use React Router instead! It's battle-tested, and Redux Router Kit borrows its concepts heavily! Redux Router Kit is an alternative that gives tighter integration with Redux.
+
 ## Install
 
 ```bash
@@ -35,10 +39,9 @@ const HomePage = () => (
   <div>Home!</div>
 );
 
-// Params are automatically passed as props.
-const TodoApp = ({id}) => (
-  id ? (
-    <div>Todo: {id}</div>
+const TodoApp = ({params}) => (
+  params.id ? (
+    <div>Todo: {params.id}</div>
   ) : (
     <div>Todos: {/* list todos */}</div>
   )
@@ -100,8 +103,8 @@ const TodoList = () => (
   <div>Todos: {/* list todos */}</div>
 );
 
-const TodoItem = ({id}) => (
-  <div>Todo: {id}</div>
+const TodoItem = ({params}) => (
+  <div>Todo: {params.id}</div>
 );
 
 const routes = {
@@ -128,13 +131,89 @@ const routes = {
 };
 ```
 
+## RouterContainer / Router
+
+The RouterContainer listens to routing state changes and delegates its props to the Router component, which takes the following props.
+
+### `routes`
+
+Route mapping object. See the examples above.
+
+    router: PropTypes.object.isRequired,
+    routes: PropTypes.object.isRequired,
+
+    render: PropTypes.func,
+    renderBeforeCurrent: PropTypes.func,
+    renderNotFound: PropTypes.func,
+    renderDefault: PropTypes.func,
+    renderRoot: PropTypes.func,
+    renderComponent: PropTypes.func,
+    renderRoutes: PropTypes.func
+
+### `renderBeforeCurrent({router})`
+
+If there is no current route, this function will be called.
+
+### `render{router, query, params, matchedRoutes}`
+
+If you'd like to take control of all rendering for routes, pass in this function. No other rendering functions will be called. If no routes match, then `matchedRoutes` will be `null`.
+
+###  `renderRoutes({router, query, params, matchedRoutes})`
+
+Like `render`, but only called if there are matchedRoutes.
+
+### `renderDefault({router, query, params, matchedRoutes})`
+
+If the matching routes don't have any components or don't reduce to a single element, this function will be called.
+
+### `renderRoot({router, query, params, matchedRoutes})`
+
+After all components have reduced to a single element (or map of named elements), this function will be called to render any wrapping elements.
+
+### `createElement({router, query, params, matchedRoutes, route, children})`
+
+For each component in a route, this function is called to return an element to be rendered. If child routes provide named components, named elements will be passed as props instead of `children`.
+
 ## Routing component props
 
-Components rendered by routes receive the following props:
+Components rendered by routes receive the following props. These will also be passed to `createElement` if you provide that function to `RouterContainer`.
 
 ### `router`
 
-This is the current routing state.
+This is the current routing state. An example of the routing state is:
+
+```js
+{
+  // When the url changes, `current` moves to `previous`.
+  previous: {
+    url: '/todos/123',
+    // ... same properties as current
+  },
+  current: {
+    url: '/todos/123?edit=true',
+    query: {
+      edit: 'true'
+    },
+    params: {
+      id: 123
+    },
+    routeKey: ['/todos', ':id'],
+    location: {
+      host: 'www.example.com',
+      pathname: '/todos/123',
+      protocol: 'https:',
+      // etc., just like browser's location
+    },
+    replace: false,
+    state: null
+  },
+  // When the url changes, `next` will first get the new value of `current`.
+  // Middleware or components can then cancel or redirect. If not canceled
+  // or redirected, `current` will then become `next`. If `next` is null,
+  // there is no current transition.
+  next: null
+}
+```
 
 ### `matchedRoutes`
 
@@ -144,15 +223,41 @@ An array of matched routes.
 
 The specific route being rendered.
 
-### `matchedRouteIndex`
+### `params`
 
-The index of the route in the `matchedRoutes`.
+The route parameters.
+
+### `query`
+
+The query parameters.
 
 ## Links
 
 When you use `RouterContainer`, it responds to click/touch events so routing actions are automatically triggered. So you don't have to use a special `<Link>` component. A normal `<a>` will work just fine.
 
-## Routing actions
+## Routing action creators
+
+### `routeTo(url, {event, replace, exit})`
+
+Dispatches a `ROUTE_TO_NEXT` action, which adds `url` to `router.next` state. Calls `onLeave` hooks for any routes which are removed and `onEnter` hooks for any routes which are added.
+
+The route can be canceled with `cancelRoute` or redirected or exited with another `routeTo`.
+
+If `event` is provided, it will be inspected for things like command-click to open new tabs.
+
+If `exit` is provided, the route will roughly be equivalent to:
+
+```js
+window.location.href = url
+```
+
+(Currently, only absolute urls are supported though.)
+
+### `cancelRoute()`
+
+Cancels the `router.next` route and removes it from state.
+
+## Dispatching routing actions from components
 
 If you do want to manually trigger routing actions, you can either manually wire up the action with `connect`:
 
@@ -185,4 +290,38 @@ const AddTodoButton = ({routeTo}) => (
 const ConnectedAddTodoButton = connectRouterActions(AddTodoButton);
 ```
 
-## Routing state
+## Connecting your components to routing state
+
+You can use `connect` to grab any routing state for your components. For example:
+
+```js
+const TodoItem = ({query, todo}) => {
+  const style = query.theme === 'dark' ? {
+    color: 'white',
+    backgroundColor: 'black'
+  } : {};
+  return <div style={style}>{todo.title}</div>;
+};
+
+const TodoItemContainer = connect(
+  state => ({
+    query: state.router.current.query
+  })
+)(TodoItem);
+```
+
+You can also use `connectRouter` to grab _all_ routing state and action creators for your components. For example:
+
+```js
+const TodoItem = ({router, todo}) => {
+  const style = router.current.query.theme === 'dark' ? {
+    color: 'white',
+    backgroundColor: 'black'
+  } : {};
+  return <div style={style}>{todo.title}</div>;
+};
+
+const TodoItemContainer = connectRouter(TodoItem);
+```
+
+You should only use this if you want your component to be updated for _all_ routing state changes. For example, the second example will update during routing transition, whereas the second will only update when the current route is changed.
