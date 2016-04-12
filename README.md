@@ -330,3 +330,50 @@ const TodoItemContainer = connectRouter(TodoItem);
 ```
 
 You should only use this if you want your component to be updated for _all_ routing state changes. For example, the second example will update during routing transition, whereas the second will only update when the current route is changed.
+
+## Custom middleware
+
+Here's an example of custom middleware that would require the user to login.
+
+```js
+import { ROUTE_TO_NEXT, findRoutes, routeTo } from 'redux-router-kit';
+
+const routes = {
+  '/': {
+    component: HomePage
+  }
+  '/me': {
+    component: AccountDetails,
+    requiresLogin: true
+  }
+};
+
+const createLoginMiddleware = ({routes}) => {
+  const middleware = store => next => action => {
+    if (!action || !action.type) {
+      return next(action);
+    }
+
+    if (!action.type === ROUTE_TO_NEXT) {
+      const matchedRoutes = findRoutes(routes, action.meta.routeKey);
+      if (matchedRoutes.some(route => route.requiresLogin)) {
+        const { account } = store.getState();
+        if (!account.isLoggedIn) {
+          return dispatch(routeTo('/login'));
+        }
+      }
+    }
+
+    return next(action);
+  };
+  return middleware;
+};
+
+const store = createStore(
+  reducer,
+  applyMiddleware(
+    createRouterMiddleware({routes}),
+    createLoginMiddleware({routes})
+  )
+);
+```
