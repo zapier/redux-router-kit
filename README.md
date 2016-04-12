@@ -128,6 +128,26 @@ const routes = {
 };
 ```
 
+## Routing component props
+
+Components rendered by routes receive the following props:
+
+### `router`
+
+This is the current routing state.
+
+### `matchedRoutes`
+
+An array of matched routes.
+
+### `route`
+
+The specific route being rendered.
+
+### `matchedRouteIndex`
+
+The index of the route in the `matchedRoutes`.
+
 ## Links
 
 When you use `RouterContainer`, it responds to click/touch events so routing actions are automatically triggered. So you don't have to use a special `<Link>` component. A normal `<a>` will work just fine.
@@ -164,3 +184,5 @@ const AddTodoButton = ({routeTo}) => (
 
 const ConnectedAddTodoButton = connectRouterActions(AddTodoButton);
 ```
+
+## Routing state

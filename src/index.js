@@ -9,6 +9,7 @@ export { default as createRouterMiddleware } from './middleware/createRouterMidd
 
 export { default as matchRoutes } from './utils/matchRoutes';
 export { default as findRoutes } from './utils/findRoutes';
+export { default as createElementFromRoutes } from './utils/createElementFromRoutes';
 
 export { default as RouterActions } from './Actions';
 export * from './Actions';

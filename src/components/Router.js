@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 
 import findRoutes from '../utils/findRoutes';
+import createElementFromRoutes from '../utils/createElementFromRoutes';
+import elementToProps from '../utils/elementToProps';
 
 const Router = React.createClass({
 
@@ -8,16 +10,12 @@ const Router = React.createClass({
     router: PropTypes.object.isRequired,
     routes: PropTypes.object.isRequired,
 
+    render: PropTypes.func,
     renderBeforeCurrent: PropTypes.func,
-
-    notFoundComponent: PropTypes.func,
     renderNotFound: PropTypes.func,
-
-    defaultComponent: PropTypes.func,
     renderDefault: PropTypes.func,
-
+    renderRoot: PropTypes.func,
     renderComponent: PropTypes.func,
-
     renderRoutes: PropTypes.func
   },
 
@@ -40,11 +38,13 @@ const Router = React.createClass({
   render() {
 
     const {
+      children,
       router,
       renderBeforeCurrent,
-      renderRoutes, renderComponent, renderDefault, renderNotFound,
-      defaultComponent, notFoundComponent: NotFound
+      renderRoutes, renderComponent, renderDefault, renderRoot, renderNotFound
     } = this.props;
+
+    const render = typeof children === 'function' ? children : this.props.render;
 
     const createElement = renderComponent || this.props.createElement;
 
@@ -57,69 +57,61 @@ const Router = React.createClass({
         router
       };
 
-      if (!matchedRoutes) {
-
-        if (renderNotFound) {
-          return renderNotFound(baseProps);
-        }
-
-        if (NotFound) {
-          return <NotFound {...baseProps}/>;
-        }
-
-        return null;
-      }
-
       const matchProps = {
         ...router.current.params || {},
         ...baseProps,
         matchedRoutes
       };
 
+      if (render) {
+        return render(matchProps);
+      }
+
+      if (!matchedRoutes) {
+
+        if (renderNotFound) {
+          return renderNotFound(baseProps);
+        }
+
+        return null;
+      }
+
       if (renderRoutes) {
         return renderRoutes(matchProps);
       }
 
-      const element = matchedRoutes.reduceRight((childElement, route, matchedRouteIndex) => {
-        const { component, components } = route;
-        if (typeof component !== 'function' && (!component || typeof components !== 'object')) {
-          return childElement;
-        }
-        const routeProps = {
-          ...matchProps,
-          route,
-          matchedRouteIndex
-        };
-        if (React.isValidElement(childElement) || childElement === null) {
-          routeProps.children = childElement;
-        } else if (childElement) {
-          Object.keys(childElement).forEach(key => {
-            routeProps[key] = childElement[key];
-          });
-        }
-        if (component) {
-          return createElement(component, routeProps);
-        }
-        return Object.keys(components).reduce((elements, key) => {
-          elements[key] = createElement(components[key], {
-            key, ...routeProps
-          });
-        }, {});
-      }, null);
+      const element = createElementFromRoutes({
+        ...baseProps,
+        matchedRoutes,
+        createElement
+      });
 
-      if (element === null) {
-        if (renderDefault) {
-          return renderDefault(matchProps);
-        } else if (defaultComponent) {
-          return createElement(defaultComponent, matchProps);
-        }
+      const elementOrDefault = element == null && renderDefault ? (
+        renderDefault(matchProps)
+      ) : element;
+
+      const rootProps = {
+        ...matchProps,
+        ...elementToProps(elementOrDefault)
+      };
+
+      if (renderRoot) {
+        return renderRoot(rootProps);
       }
 
-      return element;
+      return elementOrDefault;
     }
 
     if (renderBeforeCurrent) {
-      return renderBeforeCurrent();
+      return renderBeforeCurrent({
+        router
+      });
+    }
+
+    if (render) {
+      return render({
+        router
+      });
     }
 
     return null;

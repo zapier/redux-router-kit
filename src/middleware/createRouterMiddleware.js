@@ -356,7 +356,7 @@ const createRouterMiddleware = ({
         return inFlightNext;
       },
 
-      // Intercept actual route if unknown route.
+      // Intercept actual route if unknown route or exit route.
       [ActionTypes.ROUTE_TO]({router, dispatch, next, action}) {
         inFlightNext = null;
         const { meta } = action;
@@ -365,7 +365,9 @@ const createRouterMiddleware = ({
 
         // Only allow exiting if we have already routed, to prevent loops.
         if (router.current) {
-          if (!nextRoutes) {
+          // Probably should get route `exit` into state, but we need to
+          // differenciate between route exits and legitimate redirects.
+          if (!nextRoutes || nextRoutes.some(route => route.exit)) {
             return dispatch({
               ...action,
               type: ActionTypes.ROUTE_TO_EXIT
