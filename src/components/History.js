@@ -4,6 +4,7 @@ import React, { PropTypes } from 'react';
 
 import onLink from '../utils/onLink';
 import statesAreEqual from '../utils/statesAreEqual';
+import isOnlyHrefHashChange from '../utils/isOnlyHrefHashChange';
 
 const History = React.createClass({
 
@@ -31,8 +32,17 @@ const History = React.createClass({
       this.history.listenBefore(this.onBeforeLocationChange);
     this.unsubscribeFromLinks = onLink((event) => {
       if (event.target.href) {
-        event.preventDefault();
-        this.props.onChange(event.target.href);
+        // Bit of a hack now to let anchors work normally.
+        let shouldEmit = true;
+        if (typeof window !== 'undefined') {
+          if (isOnlyHrefHashChange(window.location.href, event.target.href)) {
+            shouldEmit = false;
+          }
+        }
+        if (shouldEmit) {
+          event.preventDefault();
+          this.props.onChange(event.target.href);
+        }
       }
     });
     // Transition if necessary.

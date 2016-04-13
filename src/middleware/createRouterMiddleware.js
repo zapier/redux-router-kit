@@ -8,6 +8,7 @@ import isRightClick from '../utils/isRightClick';
 import findRoutes from '../utils/findRoutes';
 import matchRoutes from '../utils/matchRoutes';
 import cloneRoutesForKey from '../utils/cloneRoutesForKey';
+import isOnlyLocationHashChange from '../utils/isOnlyLocationHashChange';
 
 const UNDEFINED_HREF = 'http://example.com/';
 
@@ -41,9 +42,7 @@ const openWindow = (...args) => {
 
 const isOnlyHashChange = (current, next) => {
   if (current && next) {
-    const currentPathAndQuery = `${current.location.origin}${current.location.pathname}${current.location.search}`;
-    const nextPathAndQuery = `${next.location.origin}${next.location.pathname}${next.location.search}`;
-    return currentPathAndQuery === nextPathAndQuery;
+    return isOnlyLocationHashChange(current.location, next.location);
   }
   return false;
 };
