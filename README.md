@@ -20,6 +20,10 @@ Redux Router Kit is a routing solution for React that leverages Redux to store r
 
 If the features above aren't useful, by all means, use React Router instead! It's battle-tested, and Redux Router Kit borrows its concepts heavily! Redux Router Kit is an alternative that gives tighter integration with Redux.
 
+## Is this thing ready?
+
+Well, it is being used in production for https://zapier.com. :-) But it's quite new, so beware of silly bugs or design mistakes! Also, the API should be considered somewhat unstable at this point.
+
 ## Install
 
 ```bash
@@ -81,7 +85,7 @@ ReactDOM.render(
 );
 ```
 
-## Nested routes, onLeave/onEnter
+## Nested routes, onLeave/onEnter, and assign
 
 ```js
 const Layout = ({children}) => (
@@ -119,7 +123,21 @@ const routes = {
         component: TodoApp,
         routes: {
           '.': {
-            component: TodoList
+            component: TodoList,
+            assign({query}) {
+              if (query.page) {
+                // Return any properties for `routing.next`/`routing.current`.
+                // These can be new ad-hoc properties, or modifications of
+                // params or query.
+                return {
+                  query: {
+                    ...query,
+                    // Convert page to an integer.
+                    page: parseInt(query.page)
+                  }
+                };
+              }
+            }
           },
           'new': {
             onEnter({routeTo}) {
