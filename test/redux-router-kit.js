@@ -11,7 +11,7 @@ import 'babel-core/register';
 import routerReducer from 'redux-router-kit/src/reducer';
 import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
 import { routeTo } from 'redux-router-kit/src/Actions';
-import RouterContainer from 'redux-router-kit/src/components/RouterContainer';
+import RouterHistoryContainer from 'redux-router-kit/src/components/RouterHistoryContainer';
 
 const reducer = combineReducers({
   router: routerReducer
@@ -54,7 +54,7 @@ test('can render route', t => {
 
     render(
       <Provider store={store}>
-        <RouterContainer routes={routes} history={history}/>
+        <RouterHistoryContainer routes={routes} history={history}/>
       </Provider>,
       node
     );
@@ -90,7 +90,7 @@ test('can change query parameter of route', t => {
 
   render(
     <Provider store={store}>
-      <RouterContainer routes={routes} history={history}/>
+      <RouterHistoryContainer routes={routes} history={history}/>
     </Provider>,
     node
   );
@@ -138,7 +138,7 @@ test('can throw exception', t => {
 
   render(
     <Provider store={store}>
-      <RouterContainer routes={routes} history={history}/>
+      <RouterHistoryContainer routes={routes} history={history}/>
     </Provider>,
     node
   );
@@ -195,7 +195,7 @@ test('can render nested routes', t => {
 
   render(
     <Provider store={store}>
-      <RouterContainer routes={routes} history={history}/>
+      <RouterHistoryContainer routes={routes} history={history}/>
     </Provider>,
     node
   );
@@ -247,7 +247,7 @@ test('can render nested routes with named components', t => {
 
   render(
     <Provider store={store}>
-      <RouterContainer routes={routes} history={history}/>
+      <RouterHistoryContainer routes={routes} history={history}/>
     </Provider>,
     node
   );

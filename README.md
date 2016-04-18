@@ -32,7 +32,7 @@ npm install redux-router-kit --save
 import ReactDOM from 'react-dom';
 import { combineReducers, applyMiddleware, Provider } from 'react-redux';
 import {
-  routerReducer, createRouterMiddleware, RouterContainer
+  routerReducer, createRouterMiddleware, RouterHistoryContainer
 } from 'redux-router-kit';
 
 const HomePage = () => (
@@ -68,7 +68,7 @@ const store = createStore(
 const Root = React.createClass({
   render() {
     return (
-      <RouterContainer routes={routes}/>
+      <RouterHistoryContainer routes={routes}/>
     )
   }
 })
@@ -147,9 +147,15 @@ const routes = {
 };
 ```
 
-## RouterContainer / Router
+## Router / RouterContainer / RouterHistoryContainer
 
-The RouterContainer listens to routing state changes and delegates its props to the Router component, which takes the following props.
+The Router component requires a `routing` prop with routing state from the store.
+
+The RouterContainer component is connected to the store, and so automatically gets that prop.
+
+The RouterHistoryContainer component adds in a History component to update browser address state and automatically dispatch routing actions when the browser history changes.
+
+All these components accept the following props.
 
 ### `routes`
 
@@ -181,7 +187,7 @@ For each component in a route, this function is called to return an element to b
 
 ## Routing component props
 
-Components rendered by routes receive the following props. These will also be passed to `createElement` if you provide that function to `RouterContainer`.
+Components rendered by routes receive the following props. These will also be passed to `createElement` if you provide that function to `Router`/`RouterContainer`/`RouterHistoryContainer`.
 
 ### `router`
 
@@ -238,7 +244,7 @@ The query parameters.
 
 ## Links
 
-When you use `RouterContainer`, it responds to click/touch events so routing actions are automatically triggered. So you don't have to use a special `<Link>` component. A normal `<a>` will work just fine.
+When you use `RouterHistoryContainer`, it responds to click/touch events so routing actions are automatically triggered. So you don't have to use a special `<Link>` component. A normal `<a>` will work just fine.
 
 ## Routing action creators
 
@@ -434,6 +440,38 @@ const routerMiddleware = createRouterMiddleware({routes, fetchRoute});
 ### Async route loading state
 
 While loading async routes, `router.fetch` will be set in state. Because routes aren't yet loaded, the params/etc. will be incomplete.
+
+## Server-side/static rendering
+
+For server-side or static rendering, just use RouterContainer instead of RouterHistoryContainer.
+
+```js
+const Home = React.createClass({
+  render() {
+    return <div>Home</div>;
+  }
+});
+const routes = {
+  '/': Home
+};
+const store = createStore(
+  combineReducers({
+    router: routerReducer
+  }),
+  applyMiddleware(
+    createRouterMiddleware({routes})
+  )
+);
+return store.dispatch(routeTo('/'))
+  .then(() => {
+    const htmlString = renderToStaticMarkup(
+      <Provider store={store}>
+        <RouterContainer routes={routes}/>
+      </Provider>
+    );
+    // htmlString is now: <div>Home</div>
+  });
+```
 
 ## Thanks
 

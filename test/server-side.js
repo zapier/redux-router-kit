@@ -9,7 +9,7 @@ import 'babel-core/register';
 import routerReducer from 'redux-router-kit/src/reducer';
 import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
 import { routeTo } from 'redux-router-kit/src/Actions';
-import Router from 'redux-router-kit/src/components/Router';
+import RouterContainer from 'redux-router-kit/src/components/RouterContainer';
 
 test('render route to string', t => {
   const Home = React.createClass({
@@ -32,7 +32,7 @@ test('render route to string', t => {
     .then(() => {
       const htmlString = renderToStaticMarkup(
         <Provider store={store}>
-          <Router router={store.getState().router} routes={routes}/>
+          <RouterContainer routes={routes}/>
         </Provider>
       );
       t.is(htmlString, '<div>Home</div>');
