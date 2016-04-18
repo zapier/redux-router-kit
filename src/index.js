@@ -4,6 +4,7 @@ export { default as connectRouteActions } from './components/connectRouteActions
 
 export { default as Router } from './components/Router';
 export { default as RouterContainer } from './components/RouterContainer';
+export { default as RouterHistoryContainer } from './components/RouterHistoryContainer';
 
 export { default as createRouterMiddleware } from './middleware/createRouterMiddleware';
 
