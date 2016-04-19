@@ -1,3 +1,8 @@
+/**
+ * Add `router` prop to your component that has the full state of the router.
+ * Also adds routeTo and cancelRoute actions.
+ */
+
 import { connect } from 'react-redux';
 
 import { routeTo, cancelRoute } from '../Actions';

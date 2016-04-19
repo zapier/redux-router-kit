@@ -1,3 +1,27 @@
+/**
+ * Exports `matchRoutes` which takes a routing table and a url and finds the
+ * set of nested routes to match that url. Returns an object like:
+ *
+ * {
+ *   routes: [
+ *     {
+ *       // root route
+ *     },
+ *     {
+ *       // todos route
+ *     },
+ *     {
+ *       // todo route
+ *     }
+ *   ],
+ *   key: ['/', 'todos', ':id'],
+ *   params: {
+ *     id: '123'
+ *   },
+ *   query: {}
+ * }
+ */
+
 import pathToRegExp from 'path-to-regexp';
 import queryStringParser from 'query-string';
 

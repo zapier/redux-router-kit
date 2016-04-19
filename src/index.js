@@ -1,3 +1,7 @@
+/**
+ * Export all the things!
+ */
+
 export { default as connectRouter } from './components/connectRouter';
 export { default as connectRouteTo } from './components/connectRouteTo';
 export { default as connectRouteActions } from './components/connectRouteActions';

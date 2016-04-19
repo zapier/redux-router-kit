@@ -1,3 +1,7 @@
+/**
+ * Provides a way to subscribe to link clicking.
+ */
+
 import urlParse from 'url-parse';
 
 import isRightClick from './isRightClick';

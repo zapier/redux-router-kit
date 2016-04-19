@@ -1,3 +1,14 @@
+/**
+ * Creates a router middleware for a set of routes. Does a bunch of things:
+ *
+ * - Adds in location metadata and kicks off ROUTE_TO_NEXT actions.
+ * - Calls any onEnter/onLeave hooks before the final ROUTE_TO action.
+ * - Handles "exiting" of routes to the server.
+ * - Tries its best to handle events that should open a tab or window instead of
+ *   routing.
+ * - Handles async routes.
+ */
+
 import createMiddleware from '../utils/createMiddleware';
 import parseUrl from '../utils/parseUrl';
 import ActionTypes from '../ActionTypes';

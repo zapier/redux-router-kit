@@ -1,3 +1,7 @@
+/**
+ * Add routeTo prop to your component.
+ */
+
 import { connect } from 'react-redux';
 
 import { routeTo } from '../Actions';

@@ -1,3 +1,7 @@
+/**
+ * Check if an event is a right-click.
+ */
+
 const isRightClick = (event = {}) => {
   // We can only make a determination if there's a `which` or `button`.
   if (event.which != null || event.button != null) {

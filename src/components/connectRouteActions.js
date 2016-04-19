@@ -1,3 +1,7 @@
+/**
+ * Add routeTo, cancelRoute props to your component.
+ */
+
 import { connect } from 'react-redux';
 
 import { routeTo, cancelRoute } from '../Actions';

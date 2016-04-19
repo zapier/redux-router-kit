@@ -1,3 +1,8 @@
+/**
+ * "Normalizes" routes to be an object with a `path`. If a route points directly
+ * to a component/function, the component will be on a `component` property.
+ */
+
 const normalizeRoute = (pathPattern, value) => {
   const route = {
     path: pathPattern

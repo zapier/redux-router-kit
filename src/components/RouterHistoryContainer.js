@@ -1,3 +1,9 @@
+/**
+ * RouterHistoryContainer is already connected to the router state, so you only
+ * have to pass in `routes`. It also responds to history/click events and
+ * dispatches routeTo actions appropriately.
+ */
+
 import React, { PropTypes } from 'react';
 
 import Router from './Router';

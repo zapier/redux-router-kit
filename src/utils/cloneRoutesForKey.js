@@ -1,3 +1,9 @@
+/**
+ * Just like it says: clones routes for a route key (array of route paths). When
+ * fetching async routes, we want to update the routing table but not mutate
+ * what was passed in. So we clone the pieces we need.
+ */
+
 const cloneRoutesForKey = (routes, key) => {
   routes = {
     ...routes

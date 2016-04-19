@@ -1,3 +1,7 @@
+/**
+ * Exports `routabelUrl` to make sure that we can route to the url.
+ */
+
 const isSameOrigin = (href, origin = '') => {
   return href.substring(0, origin.length) === origin;
 };

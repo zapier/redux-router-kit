@@ -1,3 +1,7 @@
+/**
+ * routeTo and cancelRoute action creators.
+ */
+
 import ActionTypes from './ActionTypes';
 
 export const routeTo = (href, options = {}) => {

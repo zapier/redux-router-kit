@@ -1,3 +1,8 @@
+/**
+ * Take an element or object of elements and return props to be passed to a
+ * parent component.
+ */
+
 import React from 'react';
 
 const elementToProps = element => {

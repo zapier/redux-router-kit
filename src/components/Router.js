@@ -1,3 +1,8 @@
+/**
+ * Router takes `router` state from the store and a map of `routes`. Renders the
+ * Component(s) from any matched routes.
+ */
+
 import React, { PropTypes } from 'react';
 
 import findRoutes from '../utils/findRoutes';

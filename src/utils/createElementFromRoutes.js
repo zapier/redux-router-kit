@@ -1,3 +1,8 @@
+/**
+ * Given a list of routes, create an element from any of the components defined
+ * for those routes.
+ */
+
 import React from 'react';
 
 import elementToProps from './elementToProps';

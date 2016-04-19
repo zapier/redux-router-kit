@@ -1,3 +1,8 @@
+/**
+ * RouterContainer is already connected to the router state, so you only have to
+ * pass in `routes`.
+ */
+
 import React, { PropTypes } from 'react';
 import Router from './Router';
 import connectRouter from './connectRouter';

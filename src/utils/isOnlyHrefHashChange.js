@@ -1,3 +1,7 @@
+/**
+ * Check if two hrefs differ only by hash.
+ */
+
 const isOnlyHrefHashChange = (a, b) => {
   if (a === b) {
     return true;

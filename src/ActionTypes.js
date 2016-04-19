@@ -1,3 +1,7 @@
+/**
+ * All the action types that redux-router-kit uses.
+ */
+
 export const ROUTE_TO_INIT = '@@redux-router-kit/ROUTE_TO_INIT';
 export const ROUTE_TO_NEXT = '@@redux-router-kit/ROUTE_TO_NEXT';
 export const ROUTE_TO_FETCH = '@@redux-router-kit/ROUTE_TO_FETCH';

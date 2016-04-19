@@ -1,3 +1,7 @@
+/**
+ * Exports `parseUrl` for, well, parsing URLs!
+ */
+
 import urlParse from 'url-parse';
 
 const schemeMatcher = /^([a-zA-Z]*\:)?\/\//;

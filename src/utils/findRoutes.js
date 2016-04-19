@@ -1,3 +1,8 @@
+/**
+ * Given a route key (array of route paths), find the routes from the routing
+ * table.
+ */
+
 import normalizeRoute from './normalizeRoute';
 
 const findRoutes = (routes, key, foundRoutes = []) => {

@@ -1,3 +1,22 @@
+/**
+ * Abstracts browser history as a component. `url` passed in will become the
+ * new browser address. Any changes to the history will call the `onChange`
+ * callback.
+ *
+ * All links will be wired up and also act as history events.
+ *
+ * Thanks to https://github.com/cerebral/addressbar and
+ * https://github.com/christianalfoni/react-addressbar for the inspiration.
+ *
+ * A couple reasons to create a different implementation based on
+ * https://github.com/mjackson/history:
+ *
+ * - addressbar doesn't keep track of history, so when you block navigation,
+ *   you _always_ lose forward history.
+ * - mjackson/history provides memory implementations which are nice for
+ *   testing!
+ */
+
 import createHistory from 'history/lib/createBrowserHistory';
 import createLocation from 'history/lib/createLocation';
 import React, { PropTypes } from 'react';
@@ -32,7 +51,8 @@ const History = React.createClass({
       this.history.listenBefore(this.onBeforeLocationChange);
     this.unsubscribeFromLinks = onLink((event) => {
       if (event.target.href) {
-        // Bit of a hack now to let anchors work normally.
+        // Anchor tags are frontend-only anyway, so they will get picked up
+        // by history. Don't let them call `onChange`.
         let shouldEmit = true;
         if (typeof window !== 'undefined') {
           if (isOnlyHrefHashChange(window.location.href, event.target.href)) {

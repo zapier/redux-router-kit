@@ -1,3 +1,7 @@
+/**
+ * Just a little boilerplate for the routing middleware.
+ */
+
 import ActionTypes from '../ActionTypes';
 
 const noPayloadActions = {

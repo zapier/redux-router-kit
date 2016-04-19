@@ -268,7 +268,7 @@ When you use `RouterHistoryContainer`, it responds to click/touch events so rout
 
 ### `routeTo(url, {event, replace, exit})`
 
-Dispatches a `ROUTE_TO_NEXT` action, which adds `url` to `router.next` state. Calls `onLeave` hooks for any routes which are removed and `onEnter` hooks for any routes which are added.
+Returns a `ROUTE_TO_NEXT` action, which, when dispatched, adds `url` to `router.next` state. Calls `onLeave` hooks for any routes which are removed and `onEnter` hooks for any routes which are added.
 
 The route can be canceled with `cancelRoute` or redirected or exited with another `routeTo`.
 
@@ -318,6 +318,8 @@ const AddTodoButton = ({routeTo}) => (
 
 const ConnectedAddTodoButton = connectRouterActions(AddTodoButton);
 ```
+
+If you only need `routeTo` (because you typically don't need `cancelRoute`), then you can use `connectRouteTo` instead.
 
 ## Connecting your components to routing state
 
@@ -491,6 +493,10 @@ return store.dispatch(routeTo('/'))
   });
 ```
 
-## Thanks
+## Thanks!
 
-Redux Router Kit heavily borrows ideas from React Router.
+Redux Router Kit heavily borrows ideas from React Router (https://github.com/reactjs/react-router).
+
+The History component borrows heavily from https://github.com/cerebral/addressbar and https://github.com/christianalfoni/react-addressbar.
+
+Internally, history (https://github.com/mjackson/history) is used, and it's pretty awesome that it's separate from React Router. :-)
