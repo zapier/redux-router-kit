@@ -199,13 +199,13 @@ If the matching routes don't have any components or don't reduce to a single ele
 
 After all components have reduced to a single element (or map of named elements), this function will be called to render any wrapping elements.
 
-### `createElement({router, query, params, matchedRoutes, route, children})`
+### `createElement(Component, {router, query, params, matchedRoutes, route, children})`
 
 For each component in a route, this function is called to return an element to be rendered. If child routes provide named components, named elements will be passed as props instead of `children`.
 
 ## Routing component props
 
-Components rendered by routes receive the following props. These will also be passed to `createElement` if you provide that function to `Router`/`RouterContainer`/`RouterHistoryContainer`.
+Components rendered by routes receive the following props. These will also be passed to `createElement` if you provide that function to `Router`/`RouterContainer`/`RouterHistoryContainer`. (As well as the other render callbacks listed above.)
 
 ### `router`
 
