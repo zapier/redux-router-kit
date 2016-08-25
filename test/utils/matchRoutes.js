@@ -3,6 +3,7 @@ import 'babel-core/register';
 import matchRoutes from 'redux-router-kit/src/utils/matchRoutes';
 
 const createRoutes = () => ({
+  '/': 'root',
   '/users': 'users',
   '/users/:id': 'user',
   '/todos': {
@@ -218,4 +219,16 @@ test('match async route', t => {
   t.same(todosRouteMatch.key, ['/todos']);
   const todoRouteMatch = matchRoutes(routes, '/todos/123');
   t.same(todoRouteMatch.key, ['/todos']);
+});
+
+test('match root', t => {
+  const routes = createRoutes();
+  const rootRouteMatch = matchRoutes(routes, '/');
+  t.same(rootRouteMatch.key, ['/']);
+});
+
+test('match not found', t => {
+  const routes = createRoutes();
+  const nothingRouteMatch = matchRoutes(routes, '/foobar');
+  t.is(nothingRouteMatch, null);
 });
