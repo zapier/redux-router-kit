@@ -30,7 +30,9 @@ const History = React.createClass({
   propTypes: {
     url: PropTypes.string,
     state: PropTypes.object,
-    isWaiting: PropTypes.bool
+    onChange: PropTypes.func,
+    isWaiting: PropTypes.bool,
+    history: PropTypes.object
   },
 
   shouldComponentUpdate({url, state, isWaiting}) {
