@@ -22,7 +22,7 @@ If the features above aren't useful, by all means, use React Router instead! It'
 
 ## Is this thing ready?
 
-Well, it is being used in production for https://zapier.com. :-) But it's quite new, so beware of silly bugs or design mistakes! Also, the API should be considered somewhat unstable at this point.
+Well, it's been used in production at https://zapier.com for a while now. So for us, it's ready. :-) For your use case, you may find edges. If so, let us know!
 
 ## Install
 
