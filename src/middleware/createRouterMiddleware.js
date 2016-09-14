@@ -424,6 +424,8 @@ const createRouterMiddleware = ({
             // Cancel may not have made it through yet to History.
             window.location.hash = meta.location.hash;
             window.location.reload();
+          } else if (action.payload.replace && window.location.replace) {
+            window.location.replace(meta.location.href);
           } else {
             window.location.href = meta.location.href;
           }
