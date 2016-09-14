@@ -1,6 +1,6 @@
 {
   "name": "redux-router-kit",
-  "version": "0.0.46",
+  "version": "0.0.47",
   "description": "Routing tools for React+Redux",
   "main": "lib/index.js",
   "scripts": {
