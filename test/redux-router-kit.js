@@ -61,6 +61,68 @@ test('can render route', t => {
   });
 });
 
+test('address changes have a special prop', t => {
+  return new Promise((resolve, reject) => {
+
+    const history = createMemoryHistory();
+
+    const node = document.createElement('div');
+    document.body.appendChild(node);
+
+    const A = () => (
+      <div>A</div>
+    );
+
+    const B = () => (
+      <div>B</div>
+    );
+
+    const routes = {
+      '/a': {
+        component: A,
+        onEnter({action}) {
+          try {
+            t.false(action.payload.isHistoryChange === true);
+            setTimeout(() => {
+              history.push('/b');
+            });
+          } catch (err) {
+            reject(err);
+          }
+        }
+      },
+      '/b': {
+        component: B,
+        onEnter({action}) {
+          try {
+            t.true(action.payload.isHistoryChange);
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        }
+      },
+    };
+
+    const createStoreWithMiddleware = compose(
+      applyMiddleware(
+        createRouterMiddleware({routes})
+      )
+    )(createStore);
+
+    const store = createStoreWithMiddleware(reducer);
+
+    render(
+      <Provider store={store}>
+        <RouterHistoryContainer routes={routes} history={history}/>
+      </Provider>,
+      node
+    );
+
+    store.dispatch(routeTo('/a'));
+  });
+});
+
 test('can change query parameter of route', t => {
 
   const node = document.createElement('div');

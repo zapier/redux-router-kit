@@ -18,7 +18,8 @@ const RouterHistoryContainer = React.createClass({
 
   onChangeAddress(url, state) {
     this.props.routeTo(url, {
-      state
+      state,
+      isHistoryChange: true
     });
   },
 
