@@ -259,8 +259,10 @@ test('pick up in-flight promise', t => {
 test('call onEnter, onLeave', t => {
   const onEnterParentSpy = sinon.spy();
   const onLeaveParentSpy = sinon.spy();
-  const onEnterChildSpy = sinon.spy();
-  const onLeaveChildSpy = sinon.spy();
+  const onEnterChild1Spy = sinon.spy();
+  const onLeaveChild1Spy = sinon.spy();
+  const onEnterChild2Spy = sinon.spy();
+  const onLeaveChild2Spy = sinon.spy();
   const store = createStore(reducer, applyMiddleware(
     createRouterMiddleware({
       routes: {
@@ -269,10 +271,12 @@ test('call onEnter, onLeave', t => {
           onLeave: onLeaveParentSpy,
           routes: {
             'nested1': {
-              onEnter: onEnterChildSpy,
-              onLeave: onLeaveChildSpy
+              onEnter: onEnterChild1Spy,
+              onLeave: onLeaveChild1Spy
             },
             'nested2': {
+              onEnter: onEnterChild2Spy,
+              onLeave: onLeaveChild2Spy
             }
           }
         },
@@ -286,23 +290,29 @@ test('call onEnter, onLeave', t => {
     })
     .then(() => {
       t.is(onEnterParentSpy.callCount, 1);
-      t.is(onEnterChildSpy.callCount, 1);
+      t.is(onEnterChild1Spy.callCount, 1);
+      t.is(onEnterChild2Spy.callCount, 0);
       t.is(onLeaveParentSpy.callCount, 0);
-      t.is(onLeaveChildSpy.callCount, 0);
+      t.is(onLeaveChild1Spy.callCount, 0);
+      t.is(onLeaveChild2Spy.callCount, 0);
       return store.dispatch(routeTo('/a/nested2'));
     })
     .then(() => {
       t.is(onEnterParentSpy.callCount, 1);
-      t.is(onEnterChildSpy.callCount, 1);
+      t.is(onEnterChild1Spy.callCount, 1);
+      t.is(onEnterChild2Spy.callCount, 1);
       t.is(onLeaveParentSpy.callCount, 0);
-      t.is(onLeaveChildSpy.callCount, 1);
+      t.is(onLeaveChild1Spy.callCount, 1);
+      t.is(onLeaveChild2Spy.callCount, 0);
       return store.dispatch(routeTo('/b'));
     })
     .then(() => {
       t.is(onEnterParentSpy.callCount, 1);
-      t.is(onEnterChildSpy.callCount, 1);
+      t.is(onEnterChild1Spy.callCount, 1);
+      t.is(onEnterChild2Spy.callCount, 1);
       t.is(onLeaveParentSpy.callCount, 1);
-      t.is(onLeaveChildSpy.callCount, 1);
+      t.is(onLeaveChild1Spy.callCount, 1);
+      t.is(onLeaveChild2Spy.callCount, 1);
     });
 });
 
