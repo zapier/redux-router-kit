@@ -257,18 +257,20 @@ test('pick up in-flight promise', t => {
 });
 
 test('call onEnter, onLeave', t => {
-  const onEnterSpy = sinon.spy();
-  const onLeaveSpy = sinon.spy();
+  const onEnterParentSpy = sinon.spy();
+  const onLeaveParentSpy = sinon.spy();
+  const onEnterChildSpy = sinon.spy();
+  const onLeaveChildSpy = sinon.spy();
   const store = createStore(reducer, applyMiddleware(
     createRouterMiddleware({
       routes: {
         '/a': {
-          onEnter: onEnterSpy,
-          onLeave: onLeaveSpy,
+          onEnter: onEnterParentSpy,
+          onLeave: onLeaveParentSpy,
           routes: {
             'nested1': {
-              onEnter: onEnterSpy,
-              onLeave: onLeaveSpy
+              onEnter: onEnterChildSpy,
+              onLeave: onLeaveChildSpy
             },
             'nested2': {
             }
@@ -283,18 +285,24 @@ test('call onEnter, onLeave', t => {
       return store.dispatch(routeTo('/a/nested1'));
     })
     .then(() => {
-      t.is(onEnterSpy.callCount, 2);
-      t.is(onLeaveSpy.callCount, 0);
+      t.is(onEnterParentSpy.callCount, 1);
+      t.is(onEnterChildSpy.callCount, 1);
+      t.is(onLeaveParentSpy.callCount, 0);
+      t.is(onLeaveChildSpy.callCount, 0);
       return store.dispatch(routeTo('/a/nested2'));
     })
     .then(() => {
-      t.is(onEnterSpy.callCount, 2);
-      t.is(onLeaveSpy.callCount, 1);
+      t.is(onEnterParentSpy.callCount, 1);
+      t.is(onEnterChildSpy.callCount, 1);
+      t.is(onLeaveParentSpy.callCount, 0);
+      t.is(onLeaveChildSpy.callCount, 1);
       return store.dispatch(routeTo('/b'));
     })
     .then(() => {
-      t.is(onEnterSpy.callCount, 2);
-      t.is(onLeaveSpy.callCount, 2);
+      t.is(onEnterParentSpy.callCount, 1);
+      t.is(onEnterChildSpy.callCount, 1);
+      t.is(onLeaveParentSpy.callCount, 1);
+      t.is(onLeaveChildSpy.callCount, 1);
     });
 });
 
