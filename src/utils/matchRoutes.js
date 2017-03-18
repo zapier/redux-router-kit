@@ -27,6 +27,12 @@ import queryStringParser from 'query-string';
 
 import normalizeRoute from './normalizeRoute';
 
+/**
+ * createRouteMatcher adapted from:
+ * https://github.com/pillarjs/path-match/blob/f461d324572404943fbde1562dddee6e03fe383c/index.js
+ * Mainly this is to avoid the http-errors dependency.
+ */
+
 // Convert path to a compiled route matcher.
 const createRouteMatcher = pathPattern => {
   let keys = [];
@@ -40,7 +46,8 @@ const createRouteMatcher = pathPattern => {
 
     params = params || {};
 
-    var key, param;
+    let key;
+    let param;
     for (var i = 0; i < keys.length; i++) {
       key = keys[i];
       param = m[i + 1];
@@ -80,6 +87,12 @@ const extendResult = (result, pathPattern, route, params) => ({
   routes: result.routes.concat(route),
   params: {...result.params, ...params}
 });
+
+/**
+ * Route matching adapted from:
+ * https://github.com/ReactTraining/react-router/blob/800991cd2044293718fccd3763b9d91c2f811296/modules/matchRoutes.js
+ * But made to work with simple regexp-based routes above.
+ */
 
 const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
   key: [],
