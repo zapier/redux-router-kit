@@ -9,6 +9,7 @@ export default {
     'path-to-regexp',
     'query-string',
     'react',
+    'prop-types',
     'react-redux',
     'url-parse'
   ],

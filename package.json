@@ -51,6 +51,7 @@
   "dependencies": {
     "history": "^2.0.1",
     "path-to-regexp": "^1.2.1",
+    "prop-types": "^15.6.0",
     "query-string": "^4.1.0",
     "url-parse": "^1.1.1"
   },

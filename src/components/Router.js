@@ -3,7 +3,8 @@
  * Component(s) from any matched routes.
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import findRoutes from '../utils/findRoutes';
 import createElementFromRoutes from '../utils/createElementFromRoutes';
