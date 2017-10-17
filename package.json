@@ -55,6 +55,10 @@
     "query-string": "^4.1.0",
     "url-parse": "^1.1.1"
   },
+  "peerDependencies": {
+    "react": ">= 0.14",
+    "react-dom": ">= 0.14"
+  },
   "ava": {
     "babel": {
       "presets": [
