@@ -19,7 +19,8 @@
 
 import createHistory from 'history/lib/createBrowserHistory';
 import createLocation from 'history/lib/createLocation';
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import onLink from '../utils/onLink';
 import statesAreEqual from '../utils/statesAreEqual';
