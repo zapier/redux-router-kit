@@ -5,12 +5,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import createReactClass from 'create-react-class';
 
 import findRoutes from '../utils/findRoutes';
 import createElementFromRoutes from '../utils/createElementFromRoutes';
 import elementToProps from '../utils/elementToProps';
 
-const Router = React.createClass({
+const Router = createReactClass({
 
   propTypes: {
     router: PropTypes.object.isRequired,

@@ -5,13 +5,14 @@
  */
 
 import React from 'react';
+import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 
 import Router from './Router';
 import connectRouter from './connectRouter';
 import History from './History';
 
-const RouterHistoryContainer = React.createClass({
+const RouterHistoryContainer = createReactClass({
 
   propTypes: {
     routes: PropTypes.object.isRequired

@@ -19,14 +19,14 @@
 
 import createHistory from 'history/lib/createBrowserHistory';
 import createLocation from 'history/lib/createLocation';
-import React from 'react';
 import PropTypes from 'prop-types';
+import createReactClass from 'create-react-class';
 
 import onLink from '../utils/onLink';
 import statesAreEqual from '../utils/statesAreEqual';
 import isOnlyHrefHashChange from '../utils/isOnlyHrefHashChange';
 
-const History = React.createClass({
+const History = createReactClass({
 
   propTypes: {
     url: PropTypes.string,

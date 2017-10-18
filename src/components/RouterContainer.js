@@ -4,11 +4,12 @@
  */
 
 import React from 'react';
+import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import Router from './Router';
 import connectRouter from './connectRouter';
 
-const RouterContainer = React.createClass({
+const RouterContainer = createReactClass({
 
   propTypes: {
     routes: PropTypes.object.isRequired

@@ -49,6 +49,7 @@
     "sinon": "^1.17.3"
   },
   "dependencies": {
+    "create-react-class": "^15.6.2",
     "history": "^2.0.1",
     "path-to-regexp": "^1.2.1",
     "prop-types": "^15.6.0",
