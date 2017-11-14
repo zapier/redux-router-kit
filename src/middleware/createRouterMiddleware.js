@@ -195,7 +195,7 @@ const createRouterMiddleware = ({
           payload: {
             ...action.payload,
             event: cleanEvent(action.payload.event || {}),
-            isHistoryChage: action.payload.isHistoryChage
+            isHistoryChange: action.payload.isHistoryChange
           },
           meta: {
             url,
