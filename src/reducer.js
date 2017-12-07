@@ -10,10 +10,9 @@ const defaultState = {
   next: null
 };
 
-const undefinedAsNull = value => value === undefined ? null : value;
+const undefinedAsNull = value => (value === undefined ? null : value);
 
 const handlers = {
-
   /**
    * Wipe out the next route.
    */
@@ -116,6 +115,21 @@ const handlers = {
       },
       next: null,
       origin: state.origin || meta.location.origin
+    };
+  },
+
+  /**
+   * Set the `location` value in state, this is used in SSR mode to ensure that
+   * client-side links navigate correctly.
+   */
+  [ActionTypes.MODIFY_LOCATION](state, action) {
+    return {
+      ...state,
+      origin: action.payload.location.origin,
+      current: {
+        ...state.current,
+        location: action.payload.location
+      }
     };
   }
 };
