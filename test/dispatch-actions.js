@@ -42,15 +42,14 @@ const createRoutes = () => ({
 });
 
 const createStoreWithMiddleware = compose(
-  applyMiddleware(
-    createRouterMiddleware({routes: createRoutes()})
-  )
+  applyMiddleware(createRouterMiddleware({ routes: createRoutes() }))
 )(createStore);
 
 const createStoreWithRoutes = routes => {
-  return createStore(reducer, applyMiddleware(
-    createRouterMiddleware({routes})
-  ));
+  return createStore(
+    reducer,
+    applyMiddleware(createRouterMiddleware({ routes }))
+  );
 };
 
 test('dispatch routeTo', t => {
@@ -60,50 +59,50 @@ test('dispatch routeTo', t => {
   let router = store.getState().router;
   t.is(router.next.url, '/todos');
   t.is(router.current, null);
-  return result
-    .then(() => {
-      router = store.getState().router;
-      t.is(router.current.url, '/todos');
-      const routeList = findRoutes(routes, router.current.routeKey);
-      t.is(routeList[0].name, 'todos');
-      t.true(router.current.isTodosRoute);
-    });
+  return result.then(() => {
+    router = store.getState().router;
+    t.is(router.current.url, '/todos');
+    const routeList = findRoutes(routes, router.current.routeKey);
+    t.is(routeList[0].name, 'todos');
+    t.true(router.current.isTodosRoute);
+  });
 });
 
 test('dispatch routeTo for nested route', t => {
   const routes = createRoutes();
   const store = createStoreWithRoutes(routes);
-  store.dispatch(routeTo('/todos/123'))
-    .then(() => {
-      const router = store.getState().router;
-      t.is(router.current.url, '/todos/123');
-      t.same(router.current.params, {id: '123'});
-      const routeList = findRoutes(routes, router.current.routeKey);
-      t.is(routeList[0].name, 'todos');
-      t.is(routeList[1].name, 'todo');
-    });
+  store.dispatch(routeTo('/todos/123')).then(() => {
+    const router = store.getState().router;
+    t.is(router.current.url, '/todos/123');
+    t.same(router.current.params, { id: '123' });
+    const routeList = findRoutes(routes, router.current.routeKey);
+    t.is(routeList[0].name, 'todos');
+    t.is(routeList[1].name, 'todo');
+  });
 });
 
 test('dispatch routeTo with state', t => {
   const store = createStoreWithMiddleware(reducer);
-  const result = store.dispatch(routeTo('/todos', {
-    state: {count: 100}
-  }));
+  const result = store.dispatch(
+    routeTo('/todos', {
+      state: { count: 100 }
+    })
+  );
   let router = store.getState().router;
   t.is(router.next.url, '/todos');
-  t.same(router.next.state, {count: 100});
+  t.same(router.next.state, { count: 100 });
   t.is(router.current, null);
-  return result
-    .then(() => {
-      router = store.getState().router;
-      t.is(router.current.url, '/todos');
-      t.same(router.current.state, {count: 100});
-    });
+  return result.then(() => {
+    router = store.getState().router;
+    t.is(router.current.url, '/todos');
+    t.same(router.current.state, { count: 100 });
+  });
 });
 
 test('dispatch to same as current url should be no-op', t => {
   const store = createStoreWithMiddleware(reducer);
-  return store.dispatch(routeTo('/todos'))
+  return store
+    .dispatch(routeTo('/todos'))
     .then(() => {
       return store.dispatch(routeTo('/todos'));
     })
@@ -123,11 +122,10 @@ test('dispatch with right-click should be no-op', t => {
         }
       })
     )
-  )
-    .then(() => {
-      const router = store.getState().router;
-      t.is(router.current, null);
-    });
+  ).then(() => {
+    const router = store.getState().router;
+    t.is(router.current, null);
+  });
 });
 
 test('dispatch with meta-click should be no-op', t => {
@@ -140,31 +138,35 @@ test('dispatch with meta-click should be no-op', t => {
         }
       })
     )
-  )
-    .then(() => {
-      const router = store.getState().router;
-      t.is(router.current, null);
-    });
+  ).then(() => {
+    const router = store.getState().router;
+    t.is(router.current, null);
+  });
 });
 
 test('dispatch to same as current url with new state should not be a no-op', t => {
   const store = createStoreWithMiddleware(reducer);
-  return store.dispatch(routeTo('/todos', {
-    state: {
-      count: 100
-    }
-  }))
-    .then(() => {
-      return store.dispatch(routeTo('/todos', {
+  return store
+    .dispatch(
+      routeTo('/todos', {
         state: {
-          count: 200
+          count: 100
         }
-      }));
+      })
+    )
+    .then(() => {
+      return store.dispatch(
+        routeTo('/todos', {
+          state: {
+            count: 200
+          }
+        })
+      );
     })
     .then(() => {
       const router = store.getState().router;
-      t.same(router.previous.state, {count: 100});
-      t.same(router.current.state, {count: 200});
+      t.same(router.previous.state, { count: 100 });
+      t.same(router.current.state, { count: 200 });
     });
 });
 
@@ -180,7 +182,8 @@ test('dispatch to same as next url should be no-op', t => {
 
 test('allow overwriting route', t => {
   const store = createStoreWithMiddleware(reducer);
-  return store.dispatch(routeTo('/one'))
+  return store
+    .dispatch(routeTo('/one'))
     .then(() => {
       store.dispatch(routeTo('/two'));
       const newResult = store.dispatch(routeTo('/three'));
@@ -195,7 +198,8 @@ test('allow overwriting route', t => {
 
 test('allow overwriting route with previous', t => {
   const store = createStoreWithMiddleware(reducer);
-  return store.dispatch(routeTo('/one'))
+  return store
+    .dispatch(routeTo('/one'))
     .then(() => {
       store.dispatch(routeTo('/two'));
       const newResult = store.dispatch(routeTo('/one'));
@@ -227,20 +231,16 @@ test('put exit in state and then exit', t => {
 
 test('modify next route with exit', t => {
   const store = createStoreWithMiddleware(reducer);
-  (
-    () => {
-      store.dispatch(routeTo('/one'));
-      const { router } = store.getState();
-      t.false(!!router.next.exit);
-    }
-  )();
-  (
-    () => {
-      store.dispatch(routeTo('/one', { exit: true }));
-      const { router } = store.getState();
-      t.true(router.next.exit);
-    }
-  )();
+  (() => {
+    store.dispatch(routeTo('/one'));
+    const { router } = store.getState();
+    t.false(!!router.next.exit);
+  })();
+  (() => {
+    store.dispatch(routeTo('/one', { exit: true }));
+    const { router } = store.getState();
+    t.true(router.next.exit);
+  })();
 });
 
 test('pick up in-flight promise', t => {
@@ -263,27 +263,30 @@ test('call onEnter, onLeave', t => {
   const onLeaveChild1Spy = sinon.spy();
   const onEnterChild2Spy = sinon.spy();
   const onLeaveChild2Spy = sinon.spy();
-  const store = createStore(reducer, applyMiddleware(
-    createRouterMiddleware({
-      routes: {
-        '/a': {
-          onEnter: onEnterParentSpy,
-          onLeave: onLeaveParentSpy,
-          routes: {
-            'nested1': {
-              onEnter: onEnterChild1Spy,
-              onLeave: onLeaveChild1Spy
-            },
-            'nested2': {
-              onEnter: onEnterChild2Spy,
-              onLeave: onLeaveChild2Spy
+  const store = createStore(
+    reducer,
+    applyMiddleware(
+      createRouterMiddleware({
+        routes: {
+          '/a': {
+            onEnter: onEnterParentSpy,
+            onLeave: onLeaveParentSpy,
+            routes: {
+              nested1: {
+                onEnter: onEnterChild1Spy,
+                onLeave: onLeaveChild1Spy
+              },
+              nested2: {
+                onEnter: onEnterChild2Spy,
+                onLeave: onLeaveChild2Spy
+              }
             }
-          }
-        },
-        '/b': {}
-      }
-    })
-  ));
+          },
+          '/b': {}
+        }
+      })
+    )
+  );
   return Promise.resolve()
     .then(() => {
       return store.dispatch(routeTo('/a/nested1'));
@@ -341,9 +344,7 @@ test('fetch async routes', t => {
 
   middleware.onRoutesChanged(routesChangedSpy);
 
-  const store = createStore(reducer, applyMiddleware(
-    middleware
-  ));
+  const store = createStore(reducer, applyMiddleware(middleware));
 
   return Promise.resolve()
     .then(() => {
@@ -359,4 +360,45 @@ test('fetch async routes', t => {
       t.is(router.current.params.id, '123');
       t.is(router.current.name, 'todo');
     });
+});
+
+test.only('resolve the origin if `ssrMode` is enabled', t => {
+  const routes = {
+    '/home': {
+      name: 'home'
+    },
+    '/apps': {
+      name: 'apps'
+    }
+  };
+
+  const store = createStore(
+    reducer,
+    {
+      router: {
+        current: {
+          params: {},
+          query: {},
+          _routeId: 5,
+          routeKey: ['/home'],
+          location: {},
+          url: '/home',
+          state: null,
+          replace: false
+        },
+        previous: null,
+        next: null
+      }
+    },
+    applyMiddleware(
+      createRouterMiddleware({
+        routes,
+        ssrMode: false
+      })
+    )
+  );
+
+  setTimeout(() => {
+    t.is(store.getState().router.origin !== undefined);
+  }, 0);
 });
