@@ -10,18 +10,15 @@ import Router from './Router';
 import connectRouter from './connectRouter';
 
 const RouterContainer = createReactClass({
-
   propTypes: {
-    routes: PropTypes.object.isRequired
+    routes: PropTypes.object.isRequired,
   },
 
   render() {
     const { router } = this.props;
 
-    return (
-      <Router {...this.props} router={router}/>
-    );
-  }
+    return <Router {...this.props} router={router} />;
+  },
 });
 
 export default connectRouter(RouterContainer);

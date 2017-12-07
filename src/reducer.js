@@ -7,7 +7,7 @@ import ActionTypes from './ActionTypes';
 const defaultState = {
   current: null,
   previous: null,
-  next: null
+  next: null,
 };
 
 const undefinedAsNull = value => (value === undefined ? null : value);
@@ -19,7 +19,7 @@ const handlers = {
   [ActionTypes.CANCEL_ROUTE](state) {
     return {
       ...state,
-      next: null
+      next: null,
     };
   },
 
@@ -35,8 +35,8 @@ const handlers = {
       ...state,
       next: {
         ...state.next,
-        exit: !!payload.exit
-      }
+        exit: !!payload.exit,
+      },
     };
   },
 
@@ -57,9 +57,9 @@ const handlers = {
         url: meta.url,
         state: undefinedAsNull(payload.state),
         replace: !!payload.replace,
-        exit: !!payload.exit
+        exit: !!payload.exit,
       },
-      origin: state.origin || meta.location.origin
+      origin: state.origin || meta.location.origin,
     };
   },
 
@@ -73,7 +73,7 @@ const handlers = {
     if (!payload) {
       return {
         ...state,
-        fetch: null
+        fetch: null,
       };
     }
 
@@ -88,9 +88,9 @@ const handlers = {
         url: meta.url,
         state: undefinedAsNull(payload.state),
         replace: !!payload.replace,
-        exit: !!payload.exit
+        exit: !!payload.exit,
       },
-      origin: state.origin || meta.location.origin
+      origin: state.origin || meta.location.origin,
     };
   },
 
@@ -111,10 +111,10 @@ const handlers = {
         location: meta.location,
         url: meta.url,
         state: undefinedAsNull(payload.state),
-        replace: !!payload.replace
+        replace: !!payload.replace,
       },
       next: null,
-      origin: state.origin || meta.location.origin
+      origin: state.origin || meta.location.origin,
     };
   },
 
@@ -133,11 +133,11 @@ const handlers = {
       ...state,
       current: {
         ...state.current,
-        location: payload.location
+        location: payload.location,
       },
-      origin: payload.location.origin
+      origin: payload.location.origin,
     };
-  }
+  },
 };
 
 export default function reducer(state = defaultState, action) {

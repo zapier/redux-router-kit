@@ -15,70 +15,64 @@ test('render route to string', t => {
   const Home = React.createClass({
     render() {
       return <div>Home</div>;
-    }
+    },
   });
   const routes = {
-    '/': Home
+    '/': Home,
   };
   const store = createStore(
     combineReducers({
-      router: routerReducer
+      router: routerReducer,
     }),
-    applyMiddleware(
-      createRouterMiddleware({routes})
-    )
+    applyMiddleware(createRouterMiddleware({ routes }))
   );
-  return store.dispatch(routeTo('/'))
-    .then(() => {
-      const htmlString = renderToStaticMarkup(
-        <Provider store={store}>
-          <RouterContainer routes={routes}/>
-        </Provider>
-      );
-      t.is(htmlString, '<div>Home</div>');
-    });
+  return store.dispatch(routeTo('/')).then(() => {
+    const htmlString = renderToStaticMarkup(
+      <Provider store={store}>
+        <RouterContainer routes={routes} />
+      </Provider>
+    );
+    t.is(htmlString, '<div>Home</div>');
+  });
 });
 
 test('render async route to string', t => {
   const Home = React.createClass({
     render() {
       return <div>Home</div>;
-    }
+    },
   });
   const Todos = React.createClass({
     render() {
       return <div>Todos</div>;
-    }
+    },
   });
   let routes = {
     '/': Home,
     '/todos': {
       fetch: () => {
         return Promise.resolve({
-          component: Todos
+          component: Todos,
         });
-      }
-    }
+      },
+    },
   };
-  const routerMiddleware = createRouterMiddleware({routes});
+  const routerMiddleware = createRouterMiddleware({ routes });
   const store = createStore(
     combineReducers({
-      router: routerReducer
+      router: routerReducer,
     }),
-    applyMiddleware(
-      routerMiddleware
-    )
+    applyMiddleware(routerMiddleware)
   );
-  routerMiddleware.onRoutesChanged((newRoutes) => {
+  routerMiddleware.onRoutesChanged(newRoutes => {
     routes = newRoutes;
   });
-  return store.dispatch(routeTo('/todos'))
-    .then(() => {
-      const htmlString = renderToStaticMarkup(
-        <Provider store={store}>
-          <RouterContainer routes={routes}/>
-        </Provider>
-      );
-      t.is(htmlString, '<div>Todos</div>');
-    });
+  return store.dispatch(routeTo('/todos')).then(() => {
+    const htmlString = renderToStaticMarkup(
+      <Provider store={store}>
+        <RouterContainer routes={routes} />
+      </Provider>
+    );
+    t.is(htmlString, '<div>Todos</div>');
+  });
 });

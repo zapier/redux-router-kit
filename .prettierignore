@@ -1,0 +1,7 @@
+*.min.js
+.git
+node_modules/
+flow-typed/
+cypress/
+build/*
+lib/*

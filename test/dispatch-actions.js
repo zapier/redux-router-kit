@@ -11,35 +11,35 @@ import findRoutes from 'redux-router-kit/src/utils/findRoutes';
 import { resetLocation } from '../src/Actions';
 
 const reducer = combineReducers({
-  router: routerReducer
+  router: routerReducer,
 });
 
 const createRoutes = () => ({
   '/': {
-    name: 'home'
+    name: 'home',
   },
   '/todos': {
     name: 'todos',
     assign() {
       return {
-        isTodosRoute: true
+        isTodosRoute: true,
       };
     },
     routes: {
       ':id': {
-        name: 'todo'
-      }
-    }
+        name: 'todo',
+      },
+    },
   },
   '/one': {
-    name: 'one'
+    name: 'one',
   },
   '/two': {
-    name: 'two'
+    name: 'two',
   },
   '/three': {
-    name: 'three'
-  }
+    name: 'three',
+  },
 });
 
 const createStoreWithMiddleware = compose(
@@ -86,7 +86,7 @@ test('dispatch routeTo with state', t => {
   const store = createStoreWithMiddleware(reducer);
   const result = store.dispatch(
     routeTo('/todos', {
-      state: { count: 100 }
+      state: { count: 100 },
     })
   );
   let router = store.getState().router;
@@ -119,8 +119,8 @@ test('dispatch with right-click should be no-op', t => {
     store.dispatch(
       routeTo('/todos', {
         event: {
-          button: 2
-        }
+          button: 2,
+        },
       })
     )
   ).then(() => {
@@ -135,8 +135,8 @@ test('dispatch with meta-click should be no-op', t => {
     store.dispatch(
       routeTo('/todos', {
         event: {
-          metaKey: true
-        }
+          metaKey: true,
+        },
       })
     )
   ).then(() => {
@@ -151,16 +151,16 @@ test('dispatch to same as current url with new state should not be a no-op', t =
     .dispatch(
       routeTo('/todos', {
         state: {
-          count: 100
-        }
+          count: 100,
+        },
       })
     )
     .then(() => {
       return store.dispatch(
         routeTo('/todos', {
           state: {
-            count: 200
-          }
+            count: 200,
+          },
         })
       );
     })
@@ -275,16 +275,16 @@ test('call onEnter, onLeave', t => {
             routes: {
               nested1: {
                 onEnter: onEnterChild1Spy,
-                onLeave: onLeaveChild1Spy
+                onLeave: onLeaveChild1Spy,
               },
               nested2: {
                 onEnter: onEnterChild2Spy,
-                onLeave: onLeaveChild2Spy
-              }
-            }
+                onLeave: onLeaveChild2Spy,
+              },
+            },
           },
-          '/b': {}
-        }
+          '/b': {},
+        },
       })
     )
   );
@@ -325,20 +325,20 @@ test('fetch async routes', t => {
     return Promise.resolve({
       routes: {
         ':id': {
-          name: 'todo'
-        }
-      }
+          name: 'todo',
+        },
+      },
     });
   };
 
   const routes = {
     '/todos': {
-      fetch: fetchTodosRoute
-    }
+      fetch: fetchTodosRoute,
+    },
   };
 
   const middleware = createRouterMiddleware({
-    routes
+    routes,
   });
 
   const routesChangedSpy = sinon.spy();
