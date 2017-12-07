@@ -7,22 +7,18 @@
     "test": "ava test",
     "lint": "eslint src/",
     "lint-fix": "eslint src/ --fix",
-    "prettier": "prettier --config .prettierrc --write src/**/*.js",
+    "prettier": "prettier --config .prettierrc --write **/*.js",
     "prebuild": "rm -rf lib && mkdir -p lib",
     "build": "babel src --out-dir lib && rollup -c",
     "prepublish": "npm run build",
-    "patch-release": "npm version patch && npm publish && git push --follow-tags"
+    "patch-release":
+      "npm version patch && npm publish && git push --follow-tags"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zapier/redux-router-kit.git"
   },
-  "keywords": [
-    "routing",
-    "router",
-    "redux",
-    "react"
-  ],
+  "keywords": ["routing", "router", "redux", "react"],
   "author": "Justin Deal <justin.deal@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -67,15 +63,9 @@
   },
   "ava": {
     "babel": {
-      "presets": [
-        "es2015",
-        "stage-2",
-        "react"
-      ],
+      "presets": ["es2015", "stage-2", "react"],
       "retainLines": true
     },
-    "require": [
-      "./test/helpers/setup-browser-env.js"
-    ]
+    "require": ["./test/helpers/setup-browser-env.js"]
   }
 }
