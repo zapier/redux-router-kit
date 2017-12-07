@@ -35,7 +35,7 @@ import normalizeRoute from './normalizeRoute';
 
 // Convert path to a compiled route matcher.
 const createRouteMatcher = pathPattern => {
-  let keys = [];
+  const keys = [];
   const re = pathToRegExp(pathPattern, keys);
 
   return (pathname, params) => {
@@ -48,7 +48,7 @@ const createRouteMatcher = pathPattern => {
 
     let key;
     let param;
-    for (var i = 0; i < keys.length; i++) {
+    for (let i = 0; i < keys.length; i++) {
       key = keys[i];
       param = m[i + 1];
       if (!param) {
@@ -100,7 +100,7 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
   params: {}
 }) => {
 
-  for (let pathPattern in routes) {
+  for (const pathPattern in routes) {
 
     const routeValue = routes[pathPattern];
     if (!routeValue) {

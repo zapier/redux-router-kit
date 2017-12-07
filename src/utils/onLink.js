@@ -6,7 +6,7 @@ import urlParse from 'url-parse';
 
 import isRightClick from './isRightClick';
 
-let isListening = false;
+const isListening = false;
 
 const listeners = [];
 
