@@ -13,15 +13,14 @@ import connectRouter from './connectRouter';
 import History from './History';
 
 const RouterHistoryContainer = createReactClass({
-
   propTypes: {
-    routes: PropTypes.object.isRequired
+    routes: PropTypes.object.isRequired,
   },
 
   onChangeAddress(url, state) {
     this.props.routeTo(url, {
       state,
-      isHistoryChange: true
+      isHistoryChange: true,
     });
   },
 
@@ -34,16 +33,18 @@ const RouterHistoryContainer = createReactClass({
 
     return (
       <div>
-        <Router {...this.props} router={router}/>
+        <Router {...this.props} router={router} />
         <History
           history={this.props.history}
-          url={url} state={state} replace={replace}
+          url={url}
+          state={state}
+          replace={replace}
           isWaiting={!!router.next}
           onChange={this.onChangeAddress}
         />
       </div>
     );
-  }
+  },
 });
 
 export default connectRouter(RouterHistoryContainer);

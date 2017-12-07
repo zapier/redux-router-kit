@@ -12,7 +12,6 @@ import createElementFromRoutes from '../utils/createElementFromRoutes';
 import elementToProps from '../utils/elementToProps';
 
 const Router = createReactClass({
-
   propTypes: {
     router: PropTypes.object.isRequired,
     routes: PropTypes.object.isRequired,
@@ -23,12 +22,12 @@ const Router = createReactClass({
     renderDefault: PropTypes.func,
     renderRoot: PropTypes.func,
     renderComponent: PropTypes.func,
-    renderRoutes: PropTypes.func
+    renderRoutes: PropTypes.func,
   },
 
   getDefaultProps() {
     return {
-      createElement: React.createElement
+      createElement: React.createElement,
     };
   },
 
@@ -43,31 +42,34 @@ const Router = createReactClass({
   },
 
   render() {
-
     const {
       children,
       router,
       renderBeforeCurrent,
-      renderRoutes, renderComponent, renderDefault, renderRoot, renderNotFound
+      renderRoutes,
+      renderComponent,
+      renderDefault,
+      renderRoot,
+      renderNotFound,
     } = this.props;
 
-    const render = typeof children === 'function' ? children : this.props.render;
+    const render =
+      typeof children === 'function' ? children : this.props.render;
 
     const createElement = renderComponent || this.props.createElement;
 
     if (router.current) {
-
       const matchedRoutes = this.matchedRoutes();
 
       const baseProps = {
         query: router.current.query || {},
-        router
+        router,
       };
 
       const matchProps = {
         ...baseProps,
         matchedRoutes,
-        params: router.current.params
+        params: router.current.params,
       };
 
       if (render) {
@@ -75,7 +77,6 @@ const Router = createReactClass({
       }
 
       if (!matchedRoutes) {
-
         if (renderNotFound) {
           return renderNotFound(baseProps);
         }
@@ -90,16 +91,15 @@ const Router = createReactClass({
       const element = createElementFromRoutes({
         ...baseProps,
         matchedRoutes,
-        createElement
+        createElement,
       });
 
-      const elementOrDefault = element == null && renderDefault ? (
-        renderDefault(matchProps)
-      ) : element;
+      const elementOrDefault =
+        element == null && renderDefault ? renderDefault(matchProps) : element;
 
       const rootProps = {
         ...matchProps,
-        ...elementToProps(elementOrDefault)
+        ...elementToProps(elementOrDefault),
       };
 
       if (renderRoot) {
@@ -111,18 +111,18 @@ const Router = createReactClass({
 
     if (renderBeforeCurrent) {
       return renderBeforeCurrent({
-        router
+        router,
       });
     }
 
     if (render) {
       return render({
-        router
+        router,
       });
     }
 
     return null;
-  }
+  },
 });
 
 export default Router;

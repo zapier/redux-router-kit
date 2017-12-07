@@ -75,9 +75,9 @@ const routeMeta = match => {
         const extraStateFromFunction =
           typeof route.assign === 'function'
             ? route.assign({
-              params: currMeta.params,
-              query: currMeta.query
-            })
+                params: currMeta.params,
+                query: currMeta.query,
+              })
             : undefined;
         const extraState =
           (typeof extraStateFromFunction === 'object' &&
@@ -89,12 +89,12 @@ const routeMeta = match => {
           name: route.name,
           params: currMeta.params,
           query: currMeta.query,
-          ...extraState
+          ...extraState,
         };
       },
       {
         params: match.params,
-        query: match.query
+        query: match.query,
       }
     );
   }
@@ -113,7 +113,7 @@ const createRouterMiddleware = (
     fetchRoute: fetchRouteFn = route => {
       console.error('No fetchRoute function provided for route:', route);
       return route;
-    }
+    },
   } = {}
 ) => {
   if (!routes || !(typeof routes === 'object')) {
@@ -156,7 +156,7 @@ const createRouterMiddleware = (
             const newRoutes = cloneRoutesForKey(routes, match.key);
             const newRoute = {
               ...resultRoute,
-              fetch: undefined
+              fetch: undefined,
             };
             const lastKey = match.key[match.key.length - 1];
             const parentRoutes =
@@ -201,15 +201,15 @@ const createRouterMiddleware = (
           payload: {
             ...action.payload,
             event: cleanEvent(action.payload.event || {}),
-            isHistoryChange: action.payload.isHistoryChange
+            isHistoryChange: action.payload.isHistoryChange,
           },
           meta: {
             url,
             location: parsedUrl,
             assign,
             _routeId: routeId,
-            routeKey: nextMatch && nextMatch.key
-          }
+            routeKey: nextMatch && nextMatch.key,
+          },
         };
 
         if (nextMatch && nextMatch.routes) {
@@ -228,12 +228,12 @@ const createRouterMiddleware = (
                   meta: {
                     ...nextAction.meta,
                     assign: newAssign,
-                    routeKey: newNextMatch && newNextMatch.key
-                  }
+                    routeKey: newNextMatch && newNextMatch.key,
+                  },
                 };
                 dispatch({
                   type: ActionTypes.ROUTE_TO_FETCH,
-                  payload: null
+                  payload: null,
                 });
                 return dispatch(newNextAction);
               }
@@ -253,7 +253,7 @@ const createRouterMiddleware = (
         getState,
         dispatch,
         action,
-        next
+        next,
       }) {
         const { meta } = action;
         const { event } = action.payload;
@@ -270,7 +270,7 @@ const createRouterMiddleware = (
           return Promise.resolve(
             dispatch({
               ...action,
-              type: ActionTypes.ROUTE_TO_WINDOW
+              type: ActionTypes.ROUTE_TO_WINDOW,
             })
           );
         }
@@ -287,8 +287,8 @@ const createRouterMiddleware = (
             dispatch({
               type: ActionTypes.MODIFY_ROUTE,
               payload: {
-                exit: !!action.payload.exit
-              }
+                exit: !!action.payload.exit,
+              },
             });
           }
           return inFlightNext || Promise.resolve();
@@ -341,7 +341,7 @@ const createRouterMiddleware = (
                           getState,
                           dispatch,
                           action,
-                          router
+                          router,
                         })
                       );
                     }
@@ -371,7 +371,7 @@ const createRouterMiddleware = (
                         getState,
                         dispatch,
                         action,
-                        router
+                        router,
                       })
                     );
                   }
@@ -392,7 +392,7 @@ const createRouterMiddleware = (
                   ...action,
                   type: router.next.exit
                     ? ActionTypes.ROUTE_TO_EXIT
-                    : ActionTypes.ROUTE_TO
+                    : ActionTypes.ROUTE_TO,
                 });
               });
             }
@@ -416,7 +416,7 @@ const createRouterMiddleware = (
           if (!nextRoutes || nextRoutes.some(route => route.exit)) {
             return dispatch({
               ...action,
-              type: ActionTypes.ROUTE_TO_EXIT
+              type: ActionTypes.ROUTE_TO_EXIT,
             });
           }
         }
@@ -453,7 +453,7 @@ const createRouterMiddleware = (
             // Probably should add a `reload` option later to force this.
             return next({
               ...action,
-              type: ActionTypes.ROUTE_TO
+              type: ActionTypes.ROUTE_TO,
             });
           } else if (isOnlyHashChange(window, meta)) {
             // Need for force a change, because window is out of sync.
@@ -470,7 +470,7 @@ const createRouterMiddleware = (
           // (Because origin matched anyway.)
           return next({
             ...action,
-            type: ActionTypes.ROUTE_TO
+            type: ActionTypes.ROUTE_TO,
           });
         }
         return undefined;
@@ -485,12 +485,12 @@ const createRouterMiddleware = (
         const newNextAction = {
           ...action,
           payload: {
-            location: parseUrl(action.payload.href || browserUrl(), baseUrl)
-          }
+            location: parseUrl(action.payload.href || browserUrl(), baseUrl),
+          },
         };
 
         return next(newNextAction);
-      }
+      },
     };
 
     return createMiddleware(store, handlers);

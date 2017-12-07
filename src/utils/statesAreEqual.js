@@ -17,14 +17,15 @@ const statesAreEqual = (a = null, b = null) => {
   }
 
   if (typeofA === 'object') {
-
     if (!Array.isArray(a)) {
       return Object.keys(a).every(key => statesAreEqual(a[key], b[key]));
     }
 
-    return Array.isArray(b) &&
+    return (
+      Array.isArray(b) &&
       a.length === b.length &&
-      a.every((item, index) => statesAreEqual(item, b[index]));
+      a.every((item, index) => statesAreEqual(item, b[index]))
+    );
   }
 
   return false;

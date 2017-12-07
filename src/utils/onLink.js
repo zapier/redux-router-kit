@@ -10,8 +10,7 @@ const isListening = false;
 
 const listeners = [];
 
-const onLink = (handler) => {
-
+const onLink = handler => {
   listeners.push(handler);
 
   const unsubscribe = () => {
@@ -43,12 +42,11 @@ const onLink = (handler) => {
     });
   };
 
-  const isSameOrigin = (href) => {
-    return (href && (href.indexOf(origin) === 0));
+  const isSameOrigin = href => {
+    return href && href.indexOf(origin) === 0;
   };
 
-  const getClickedHref = (event) => {
-
+  const getClickedHref = event => {
     if (isRightClick(event)) {
       return false;
     }
@@ -64,33 +62,51 @@ const onLink = (handler) => {
 
     // ensure link
     let element = event.target;
-    while (element && element.nodeName !== 'A') { element = element.parentNode; }
-    if (!element || element.nodeName !== 'A') { return false; }
+    while (element && element.nodeName !== 'A') {
+      element = element.parentNode;
+    }
+    if (!element || element.nodeName !== 'A') {
+      return false;
+    }
 
     // Ignore if tag has
     // 1. "download" attribute
     // 2. rel="external" attribute
-    if (element.hasAttribute('download') || element.getAttribute('rel') === 'external') { return false; }
+    if (
+      element.hasAttribute('download') ||
+      element.getAttribute('rel') === 'external'
+    ) {
+      return false;
+    }
 
     // Check for mailto: in the href
     const href = element.getAttribute('href');
-    if (href && href.indexOf('mailto:') > -1) { return false; }
+    if (href && href.indexOf('mailto:') > -1) {
+      return false;
+    }
 
     // check target
-    if (element.target) { return false; }
+    if (element.target) {
+      return false;
+    }
 
     // x-origin
-    if (!isSameOrigin(element.href)) { return false; }
+    if (!isSameOrigin(element.href)) {
+      return false;
+    }
 
     return href;
   };
 
-  window.addEventListener(document.ontouchstart ? 'touchstart' : 'click', function (event) {
-    const href = getClickedHref(event);
-    if (href) {
-      emitChange(href, event);
+  window.addEventListener(
+    document.ontouchstart ? 'touchstart' : 'click',
+    function(event) {
+      const href = getClickedHref(event);
+      if (href) {
+        emitChange(href, event);
+      }
     }
-  });
+  );
 
   return unsubscribe;
 };
