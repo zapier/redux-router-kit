@@ -10,10 +10,9 @@ const defaultState = {
   next: null
 };
 
-const undefinedAsNull = value => value === undefined ? null : value;
+const undefinedAsNull = value => (value === undefined ? null : value);
 
 const handlers = {
-
   /**
    * Wipe out the next route.
    */
@@ -116,6 +115,27 @@ const handlers = {
       },
       next: null,
       origin: state.origin || meta.location.origin
+    };
+  },
+
+  /**
+   * Resets the current location to whatever the provided `location` payload
+   * is. This is used after hydrating state from an SSR request. The server is
+   * unable to identify precisely what the location is, so we have the
+   * browser inform us. This ensures that when we client-side route, our code
+   * doesn't think client-side links are external links. This would typically
+   * be called with `window.location.href`
+   */
+  [ActionTypes.RESET_LOCATION](state, action) {
+    const { payload } = action;
+
+    return {
+      ...state,
+      current: {
+        ...state.current,
+        location: payload.location
+      },
+      origin: payload.location.origin
     };
   }
 };
