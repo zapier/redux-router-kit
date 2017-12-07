@@ -363,7 +363,7 @@ test('fetch async routes', t => {
     });
 });
 
-test.only('resetLocation will set the location provided', t => {
+test('resetLocation will set the location provided', t => {
   const store = createStoreWithMiddleware(reducer);
 
   return Promise.resolve().then(() => {

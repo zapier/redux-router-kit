@@ -20,7 +20,6 @@ import findRoutes from '../utils/findRoutes';
 import matchRoutes from '../utils/matchRoutes';
 import cloneRoutesForKey from '../utils/cloneRoutesForKey';
 import isOnlyLocationHashChange from '../utils/isOnlyLocationHashChange';
-import browserUrl from '../utils/browserUrl';
 
 const UNDEFINED_HREF = 'http://example.com/';
 
