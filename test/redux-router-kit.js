@@ -12,6 +12,7 @@ import routerReducer from 'redux-router-kit/src/reducer';
 import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
 import { routeTo } from 'redux-router-kit/src/Actions';
 import RouterHistoryContainer from 'redux-router-kit/src/components/RouterHistoryContainer';
+import createReactClass from 'create-react-class';
 
 const reducer = combineReducers({
   router: routerReducer
@@ -28,7 +29,7 @@ test('can render route', t => {
     const node = document.createElement('div');
     document.body.appendChild(node);
 
-    const Home = React.createClass({
+    const Home = createReactClass({
       componentDidMount() {
         const homeNode = node.childNodes[0];
         t.is(homeNode.textContent, 'hello');
@@ -128,7 +129,7 @@ test('can change query parameter of route', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
 
-  const Home = React.createClass({
+  const Home = createReactClass({
     componentDidMount() {
     },
     render() {
@@ -169,7 +170,7 @@ test('can throw exception', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
 
-  const Home = React.createClass({
+  const Home = createReactClass({
     componentDidMount() {
       const { router } = this.props;
       if (!router.next && router.current && router.current.query.x === '1') {
@@ -223,13 +224,13 @@ test('can render nested routes', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
 
-  const TodoApp = React.createClass({
+  const TodoApp = createReactClass({
     render() {
       return <div>{this.props.children}</div>;
     }
   });
 
-  const TodoEditor = React.createClass({
+  const TodoEditor = createReactClass({
     render() {
       return <div className="todo">{this.props.params.id}</div>;
     }
@@ -275,13 +276,13 @@ test('can render nested routes with named components', t => {
   const node = document.createElement('div');
   document.body.appendChild(node);
 
-  const TodoApp = React.createClass({
+  const TodoApp = createReactClass({
     render() {
       return <div>{this.props.todo}</div>;
     }
   });
 
-  const TodoEditor = React.createClass({
+  const TodoEditor = createReactClass({
     render() {
       return <div className="todo">{this.props.params.id}</div>;
     }

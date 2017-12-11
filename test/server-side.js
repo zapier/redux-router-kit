@@ -10,9 +10,10 @@ import routerReducer from 'redux-router-kit/src/reducer';
 import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
 import { routeTo } from 'redux-router-kit/src/Actions';
 import RouterContainer from 'redux-router-kit/src/components/RouterContainer';
+import createReactClass from 'create-react-class';
 
 test('render route to string', t => {
-  const Home = React.createClass({
+  const Home = createReactClass({
     render() {
       return <div>Home</div>;
     }
@@ -40,12 +41,12 @@ test('render route to string', t => {
 });
 
 test('render async route to string', t => {
-  const Home = React.createClass({
+  const Home = createReactClass({
     render() {
       return <div>Home</div>;
     }
   });
-  const Todos = React.createClass({
+  const Todos = createReactClass({
     render() {
       return <div>Todos</div>;
     }

@@ -69,7 +69,7 @@ const store = createStore(
   )
 );
 
-const Root = React.createClass({
+const Root = createReactClass({
   render() {
     return (
       <RouterHistoryContainer routes={routes}/>
@@ -466,7 +466,7 @@ While loading async routes, `router.fetch` will be set in state. Because routes 
 For server-side or static rendering, just use RouterContainer instead of RouterHistoryContainer.
 
 ```js
-const Home = React.createClass({
+const Home = createReactClass({
   render() {
     return <div>Home</div>;
   }
