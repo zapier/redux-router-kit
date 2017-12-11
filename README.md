@@ -4,6 +4,8 @@
 
 Redux Router Kit is a routing solution for React that leverages Redux to store routing and transition states and enable powerful middleware and `connect`-powered components.
 
+**Version 1.0.0 _requires_ React 16+**
+
 ## Features
 
 - Routing state lives in the store just like any other state.
