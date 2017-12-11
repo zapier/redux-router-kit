@@ -1,6 +1,6 @@
 {
   "name": "redux-router-kit",
-  "version": "0.0.56",
+  "version": "1.0.0",
   "description": "Routing tools for React+Redux",
   "main": "lib/index.js",
   "scripts": {
@@ -36,12 +36,12 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-2": "^6.5.0",
     "babel-register": "^6.7.2",
+    "create-react-class": "^15.6.2",
     "eslint": "^2.5.3",
     "eslint-plugin-react": "^4.2.3",
     "jsdom": "^8.2.0",
-    "react": "^0.14.8",
-    "react-addons-test-utils": "^0.14.8",
-    "react-dom": "^0.14.8",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "react-redux": "^4.4.1",
     "redux": "^3.3.1",
     "rollup": "^0.41.6",
@@ -49,7 +49,6 @@
     "sinon": "^1.17.3"
   },
   "dependencies": {
-    "create-react-class": "^15.6.2",
     "history": "^2.0.1",
     "path-to-regexp": "^1.2.1",
     "prop-types": "^15.6.0",
@@ -57,8 +56,8 @@
     "url-parse": "^1.1.1"
   },
   "peerDependencies": {
-    "react": ">= 0.14",
-    "react-dom": ">= 0.14"
+    "react": ">= 16.0.0",
+    "react-dom": ">= 16.0.0"
   },
   "ava": {
     "babel": {
