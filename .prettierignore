@@ -1,0 +1,14 @@
+# Ignore any minified code
+*.min.js
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directory
+node_modules/
+
+# Flow Typings
+flow-typed/
+
+# Build directory
+lib/
