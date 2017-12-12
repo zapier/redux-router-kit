@@ -10,18 +10,18 @@ const routes = {
     name: 'todos',
     routes: {
       ':id': {
-        name: 'todo'
-      }
-    }
+        name: 'todo',
+      },
+    },
   },
   '/things': {
     name: 'things',
     routes: {
       '/things/:id': {
-        name: 'thing'
-      }
-    }
-  }
+        name: 'thing',
+      },
+    },
+  },
 };
 
 test('find top-level route', t => {

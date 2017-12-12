@@ -6,7 +6,7 @@
 
 const cloneRoutesForKey = (routes, key) => {
   routes = {
-    ...routes
+    ...routes,
   };
   if (!key || key.length === 0) {
     return routes;
@@ -15,7 +15,7 @@ const cloneRoutesForKey = (routes, key) => {
   if (!route || typeof route === 'function' || typeof route !== 'object') {
     return routes;
   }
-  const routeCopy = {...route};
+  const routeCopy = { ...route };
   routes[key[0]] = routeCopy;
   if (!routeCopy.routes) {
     return routes;

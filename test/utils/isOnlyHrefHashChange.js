@@ -25,7 +25,8 @@ test('will return `false` if the first or second location does not contain a has
 
 test('will return `true` if both strings contain a hash and the base values are the same', t => {
   const locationA = 'http://www.localhost:8000/app/explore/#/hello-world';
-  const locationB = 'http://www.localhost:8000/app/explore/#/hello-world-part-2';
+  const locationB =
+    'http://www.localhost:8000/app/explore/#/hello-world-part-2';
 
   const result = isOnlyHrefHashChange(locationA, locationB);
   const expected = true;

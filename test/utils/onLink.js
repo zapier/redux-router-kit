@@ -17,7 +17,7 @@ test('onLink subscribe/click/unsubscribe', t => {
   var mouseEvent = new document.defaultView.MouseEvent('click', {
     view: window,
     bubbles: true,
-    cancelable: true
+    cancelable: true,
   });
   document.getElementById('hello').dispatchEvent(mouseEvent);
   t.is(onLinkSpy.callCount, 1);

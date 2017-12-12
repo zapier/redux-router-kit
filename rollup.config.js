@@ -11,18 +11,14 @@ export default {
     'react',
     'prop-types',
     'react-redux',
-    'url-parse'
+    'url-parse',
   ],
   plugins: [
     babel({
       babelrc: false,
-      presets: [
-        ['es2015', {modules: false}],
-        ['stage-2'],
-        ['react']
-      ],
-      plugins: ['external-helpers']
+      presets: [['es2015', { modules: false }], ['stage-2'], ['react']],
+      plugins: ['external-helpers'],
     }),
   ],
-  dest: 'lib/index.js'
+  dest: 'lib/index.js',
 };
