@@ -39,6 +39,7 @@
     "create-react-class": "^15.6.2",
     "eslint": "^2.5.3",
     "eslint-plugin-react": "^4.2.3",
+    "eslint-plugin-zapier": "^4.0.0",
     "jsdom": "^8.2.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
