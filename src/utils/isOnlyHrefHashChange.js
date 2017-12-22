@@ -7,7 +7,14 @@ const isOnlyHrefHashChange = (a, b) => {
     return false;
   }
 
-  if (!a.includes('#') || !b.includes('#')) {
+  const hasHashInA = a.includes('#');
+  const hasHashInB = b.includes('#');
+
+  if ((!hasHashInA && hasHashInB) || (hasHashInA && !hasHashInB)) {
+    return true;
+  }
+
+  if (!hasHashInA || !hasHashInB) {
     return false;
   }
 
