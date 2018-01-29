@@ -6,15 +6,15 @@ import { connect } from 'react-redux';
 
 import { routeTo } from '../Actions';
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     routeTo: (...args) => {
       dispatch(routeTo(...args));
-    }
+    },
   };
 };
 
-const connectRouteTo = (Component) => {
+const connectRouteTo = Component => {
   return connect(null, mapDispatchToProps)(Component);
 };
 

@@ -5,15 +5,12 @@
 import ActionTypes from '../ActionTypes';
 
 const noPayloadActions = {
-  [ActionTypes.CANCEL_ROUTE]: true
+  [ActionTypes.CANCEL_ROUTE]: true,
 };
 
-const createMiddleware = ({getState, dispatch}, handlers) => {
-
+const createMiddleware = ({ getState, dispatch }, handlers) => {
   return next => {
-
     return action => {
-
       if (!action || !action.type || !handlers[action.type]) {
         return next(action);
       }
@@ -26,11 +23,19 @@ const createMiddleware = ({getState, dispatch}, handlers) => {
       const router = getState().router;
 
       if (!router) {
-        console.warn(`Ignoring routing action when there is no router key on the state. Did you forget the reducer?`);
+        console.warn(
+          'Ignoring routing action when there is no router key on the state. Did you forget the reducer?'
+        );
         return undefined;
       }
 
-      return handlers[action.type]({router, getState, dispatch, next, action});
+      return handlers[action.type]({
+        router,
+        getState,
+        dispatch,
+        next,
+        action,
+      });
     };
   };
 };

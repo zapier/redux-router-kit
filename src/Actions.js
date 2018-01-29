@@ -9,14 +9,14 @@ export const routeTo = (href, options = {}) => {
     type: ActionTypes.ROUTE_TO_INIT,
     payload: {
       href,
-      ...options
-    }
+      ...options,
+    },
   };
 };
 
 export const cancelRoute = () => {
   return {
-    type: ActionTypes.CANCEL_ROUTE
+    type: ActionTypes.CANCEL_ROUTE,
   };
 };
 
@@ -24,13 +24,13 @@ export const resetLocation = href => {
   return {
     type: ActionTypes.RESET_LOCATION,
     payload: {
-      href
-    }
+      href,
+    },
   };
 };
 
 export default {
   routeTo,
   cancelRoute,
-  resetLocation
+  resetLocation,
 };

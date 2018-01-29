@@ -14,7 +14,6 @@ const hasScheme = url => {
 };
 
 const parseUrl = (url = '', baseUrl) => {
-
   if (!hasScheme(url)) {
     if (!hasScheme(baseUrl)) {
       throw new Error('Must provide scheme in url or baseUrl to parse.');
@@ -37,8 +36,8 @@ const parseUrl = (url = '', baseUrl) => {
     pathname: urlObj.pathname,
     hash: urlObj.hash,
     search: urlObj.query,
-    origin: urlObj.host ? (urlObj.protocol + '//' + urlObj.host) : '',
-    href: urlObj.href
+    origin: urlObj.host ? urlObj.protocol + '//' + urlObj.host : '',
+    href: urlObj.href,
   };
 };
 

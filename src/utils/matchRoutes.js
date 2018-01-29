@@ -85,7 +85,7 @@ const matchPathnameToPattern = (pathname, pathPattern) => {
 const extendResult = (result, pathPattern, route, params) => ({
   key: result.key.concat(pathPattern),
   routes: result.routes.concat(route),
-  params: {...result.params, ...params}
+  params: { ...result.params, ...params },
 });
 
 /**
@@ -94,14 +94,17 @@ const extendResult = (result, pathPattern, route, params) => ({
  * But made to work with simple regexp-based routes above.
  */
 
-const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
-  key: [],
-  routes: [],
-  params: {}
-}) => {
-
+const deepMatchRoutes = (
+  routes,
+  pathname,
+  remainingPathname,
+  result = {
+    key: [],
+    routes: [],
+    params: {},
+  }
+) => {
   for (let pathPattern in routes) {
-
     const routeValue = routes[pathPattern];
     if (!routeValue) {
       break;
@@ -114,7 +117,12 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
       const route = normalizeRoute(pathPattern, routeValue);
       const nextResult = extendResult(result, pathPattern, route, params);
       if (route.routes) {
-        const deeperMatch = deepMatchRoutes(route.routes, pathname, '', nextResult);
+        const deeperMatch = deepMatchRoutes(
+          route.routes,
+          pathname,
+          '',
+          nextResult
+        );
         if (deeperMatch) {
           return deeperMatch;
         }
@@ -124,9 +132,13 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
 
     if (routeValue.routes || routeValue.fetch) {
       if (pathPattern.charAt(pathPattern.length - 1) !== '*') {
-        const trailingSlash = pathPattern.charAt(pathPattern.length - 1) === '/' ? '' : '/';
+        const trailingSlash =
+          pathPattern.charAt(pathPattern.length - 1) === '/' ? '' : '/';
         const wildPathPattern = `${pathPattern}${trailingSlash}:__remainingPathnames__*`;
-        const wildParams = matchPathnameToPattern(testPathname, wildPathPattern);
+        const wildParams = matchPathnameToPattern(
+          testPathname,
+          wildPathPattern
+        );
         if (wildParams) {
           const {
             __remainingPathnames__: newRemainingPathnames,
@@ -134,9 +146,19 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
           } = wildParams;
           const newRemainingPathname = newRemainingPathnames.join('/');
           const route = normalizeRoute(pathPattern, routeValue);
-          const nextResult = extendResult(result, pathPattern, route, otherParams);
+          const nextResult = extendResult(
+            result,
+            pathPattern,
+            route,
+            otherParams
+          );
           if (routeValue.routes) {
-            return deepMatchRoutes(route.routes, pathname, newRemainingPathname, nextResult);
+            return deepMatchRoutes(
+              route.routes,
+              pathname,
+              newRemainingPathname,
+              nextResult
+            );
           } else {
             // Fetch result.
             return nextResult;
@@ -150,7 +172,6 @@ const deepMatchRoutes = (routes, pathname, remainingPathname, result = {
 };
 
 const matchRoutes = (routes, url) => {
-
   if (!routes || typeof routes !== 'object') {
     throw new Error('matchRoutes requires routes to be an object.');
   }
@@ -171,7 +192,7 @@ const matchRoutes = (routes, url) => {
 
     return {
       ...match,
-      query
+      query,
     };
   }
 

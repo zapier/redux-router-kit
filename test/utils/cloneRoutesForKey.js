@@ -12,7 +12,7 @@ test('clone empty routes', t => {
 
 test('clone routes with no key', t => {
   const routes = {
-    '/': 'home'
+    '/': 'home',
   };
   const copy = cloneRoutesForKey(routes);
   t.same(routes, copy);
@@ -21,7 +21,7 @@ test('clone routes with no key', t => {
 
 test('clone routes with one key, string value', t => {
   const routes = {
-    '/': 'home'
+    '/': 'home',
   };
   const copy = cloneRoutesForKey(routes, ['/']);
   t.same(routes, copy);
@@ -30,7 +30,7 @@ test('clone routes with one key, string value', t => {
 
 test('clone routes with one key, function value', t => {
   const routes = {
-    '/': () => {}
+    '/': () => {},
   };
   const copy = cloneRoutesForKey(routes, ['/']);
   t.same(routes, copy);
@@ -41,10 +41,9 @@ test('clone routes with one key, object value', t => {
   const routes = {
     '/': {
       routes: {
-        'foo': {
-        }
-      }
-    }
+        foo: {},
+      },
+    },
   };
   const copy = cloneRoutesForKey(routes, ['/']);
   t.same(routes, copy);
@@ -56,10 +55,9 @@ test('clone routes with two keys, object value', t => {
   const routes = {
     '/': {
       routes: {
-        'foo': {
-        }
-      }
-    }
+        foo: {},
+      },
+    },
   };
   const copy = cloneRoutesForKey(routes, ['/', 'foo']);
   t.same(routes, copy);

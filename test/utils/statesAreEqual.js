@@ -16,9 +16,9 @@ test('object not equal null', t => {
 });
 
 test('object equals similar object', t => {
-  t.true(statesAreEqual({x: 1}, {x: 1}));
+  t.true(statesAreEqual({ x: 1 }, { x: 1 }));
 });
 
 test('object not equal different object', t => {
-  t.false(statesAreEqual({x: 1}, {x: 2}));
+  t.false(statesAreEqual({ x: 1 }, { x: 2 }));
 });

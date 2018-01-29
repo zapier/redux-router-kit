@@ -8,6 +8,7 @@
     "prebuild": "rm -rf lib && mkdir -p lib",
     "build": "babel src --out-dir lib && rollup -c",
     "prepublish": "npm run build",
+    "format": "prettier --write '**/*.js' && eslint --fix src test rollup.config.js",
     "patch-release": "npm version patch && npm publish && git push --follow-tags"
   },
   "repository": {

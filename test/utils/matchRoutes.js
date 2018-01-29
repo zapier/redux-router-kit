@@ -10,21 +10,21 @@ const createRoutes = () => ({
     name: 'todos',
     routes: {
       ':id': {
-        name: 'todo'
-      }
-    }
+        name: 'todo',
+      },
+    },
   },
   '/things': {
     name: 'things',
     routes: {
       '/things/:id': {
-        name: 'thing'
-      }
-    }
-  }
+        name: 'thing',
+      },
+    },
+  },
 });
 
-const createObjectWithoutPrototype = (obj) => {
+const createObjectWithoutPrototype = obj => {
   const newObj = Object.create(null);
   Object.keys(obj).forEach(key => {
     newObj[key] = obj[key];
@@ -33,7 +33,6 @@ const createObjectWithoutPrototype = (obj) => {
 };
 
 test('simple route', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/users');
@@ -47,7 +46,6 @@ test('simple route', t => {
 });
 
 test('optional trailing slash', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/users/');
@@ -57,25 +55,22 @@ test('optional trailing slash', t => {
 });
 
 test('route with params', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/users/joe');
 
-  t.same(routeMatch.params, {id: 'joe'});
+  t.same(routeMatch.params, { id: 'joe' });
 });
 
 test('route with query', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/users?q=joe');
 
-  t.same(routeMatch.query, createObjectWithoutPrototype({q: 'joe'}));
+  t.same(routeMatch.query, createObjectWithoutPrototype({ q: 'joe' }));
 });
 
 test('route with hash', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/users#joe');
@@ -84,17 +79,15 @@ test('route with hash', t => {
 });
 
 test('route with hash and query', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/users?q=joe#foo');
 
-  t.same(routeMatch.query, createObjectWithoutPrototype({q: 'joe'}));
+  t.same(routeMatch.query, createObjectWithoutPrototype({ q: 'joe' }));
   t.same(routeMatch.key, ['/users']);
 });
 
 test('nested route', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/todos/123');
@@ -103,7 +96,6 @@ test('nested route', t => {
 });
 
 test('absolute nested route', t => {
-
   const routes = createRoutes();
 
   const routeMatch = matchRoutes(routes, '/things/123');
@@ -112,84 +104,99 @@ test('absolute nested route', t => {
 });
 
 test('parent route', t => {
-  const routeMatch = matchRoutes({
-    '/todos': {
-      name: 'todos',
-      routes: {
-        ':id': {
-          name: 'todo'
-        }
-      }
-    }
-  }, '/todos');
+  const routeMatch = matchRoutes(
+    {
+      '/todos': {
+        name: 'todos',
+        routes: {
+          ':id': {
+            name: 'todo',
+          },
+        },
+      },
+    },
+    '/todos'
+  );
   t.same(routeMatch.key, ['/todos']);
 });
 
 test('match index route', t => {
-  const routeMatch = matchRoutes({
-    '/todos': {
-      name: 'todos',
-      routes: {
-        '.': {
-          name: 'todos-index'
+  const routeMatch = matchRoutes(
+    {
+      '/todos': {
+        name: 'todos',
+        routes: {
+          '.': {
+            name: 'todos-index',
+          },
+          ':id': {
+            name: 'todo',
+          },
         },
-        ':id': {
-          name: 'todo'
-        }
-      }
-    }
-  }, '/todos');
+      },
+    },
+    '/todos'
+  );
   t.same(routeMatch.key, ['/todos', '.']);
 });
 
 test('match index route with params', t => {
-  const routeMatch = matchRoutes({
-    '/todos': {
-      name: 'todos',
-      routes: {
-        ':id': {
-          name: 'todo',
-          routes: {
-            '.': 'todo-index'
-          }
-        }
-      }
-    }
-  }, '/todos/123');
+  const routeMatch = matchRoutes(
+    {
+      '/todos': {
+        name: 'todos',
+        routes: {
+          ':id': {
+            name: 'todo',
+            routes: {
+              '.': 'todo-index',
+            },
+          },
+        },
+      },
+    },
+    '/todos/123'
+  );
   t.same(routeMatch.key, ['/todos', ':id', '.']);
 });
 
 test('match index route at root', t => {
-  const routeMatch = matchRoutes({
-    '/': {
-      name: 'root',
-      routes: {
-        '.': {
-          name: 'home'
+  const routeMatch = matchRoutes(
+    {
+      '/': {
+        name: 'root',
+        routes: {
+          '.': {
+            name: 'home',
+          },
+          todos: {
+            name: 'todos',
+          },
         },
-        'todos': {
-          name: 'todos'
-        }
-      }
-    }
-  }, '/');
+      },
+    },
+    '/'
+  );
   t.same(routeMatch.key, ['/', '.']);
 });
 
 test('match unknown route at root', t => {
-  const routeMatch = matchRoutes({
-    '/': {
-      name: 'root',
-      routes: {
-        'todos': {
-          name: 'todos'
+  const routeMatch = matchRoutes(
+    {
+      '/': {
+        name: 'root',
+        routes: {
+          todos: {
+            name: 'todos',
+          },
+          '*': {
+            name: 'unknown',
+          },
         },
-        '*': {
-          name: 'unknown'
-        }
-      }
-    }
-  }, '/todo');
+      },
+    },
+    '/todo'
+  );
   t.same(routeMatch.key, ['/', '*']);
 });
 
@@ -198,9 +205,9 @@ test('match index or any', t => {
     '/todos': {
       name: 'todos',
       routes: {
-        '*': 'wild'
-      }
-    }
+        '*': 'wild',
+      },
+    },
   };
   const todosRouteMatch = matchRoutes(routes, '/todos');
   t.same(todosRouteMatch.key, ['/todos', '*']);
@@ -212,8 +219,8 @@ test('match async route', t => {
   const routes = {
     '/todos': {
       name: 'todos',
-      fetch: true
-    }
+      fetch: true,
+    },
   };
   const todosRouteMatch = matchRoutes(routes, '/todos');
   t.same(todosRouteMatch.key, ['/todos']);

@@ -1,6 +1,9 @@
 # Ignore any minified code
 *.min.js
 
+# Stop fighting between format of prettier and `npm install`
+package.json
+
 # Coverage directory used by tools like istanbul
 coverage/
 
