@@ -15,6 +15,13 @@ import History from './History';
 const RouterHistoryContainer = createReactClass({
   propTypes: {
     routes: PropTypes.object.isRequired,
+    shouldEmitCrossOriginLinks: PropTypes.bool,
+  },
+
+  getDefaultProps() {
+    return {
+      shouldEmitCrossOriginLinks: false,
+    };
   },
 
   onChangeAddress(url, state) {
@@ -25,7 +32,7 @@ const RouterHistoryContainer = createReactClass({
   },
 
   render() {
-    const { router } = this.props;
+    const { router, shouldEmitCrossOriginLinks } = this.props;
 
     const url = router.current ? router.current.url : null;
     const state = router.current ? router.current.state : undefined;
@@ -35,6 +42,7 @@ const RouterHistoryContainer = createReactClass({
       <Router key="router" {...this.props} router={router} />,
       <History
         key="history"
+        shouldEmitCrossOriginLinks={shouldEmitCrossOriginLinks}
         history={this.props.history}
         url={url}
         state={state}
