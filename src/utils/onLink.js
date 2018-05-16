@@ -10,7 +10,7 @@ let isListening = false;
 
 const listeners = [];
 
-const onLink = (handler) => {
+const onLink = (config, handler) => {
 
   listeners.push(handler);
 
@@ -80,7 +80,9 @@ const onLink = (handler) => {
     if (element.target) { return false; }
 
     // x-origin
-    if (!isSameOrigin(element.href)) { return false; }
+    if (config.shouldEmitCrossOriginLinks !== true && !isSameOrigin(element.href)) {
+      return false;
+    }
 
     return href;
   };

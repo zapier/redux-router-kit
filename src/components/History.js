@@ -33,7 +33,14 @@ const History = createReactClass({
     state: PropTypes.object,
     onChange: PropTypes.func,
     isWaiting: PropTypes.bool,
-    history: PropTypes.object
+    history: PropTypes.object,
+    shouldEmitCrossOriginLinks: PropTypes.bool,
+  },
+
+  getDefaultProps() {
+    return {
+      shouldEmitCrossOriginLinks: false,
+    };
   },
 
   shouldComponentUpdate({url, state, isWaiting}) {
@@ -42,6 +49,7 @@ const History = createReactClass({
   },
 
   componentWillMount() {
+    const { shouldEmitCrossOriginLinks } = this.props;
     this.history = this.props.history || createHistory();
     if (this.props.url == null) {
       const unlistenCurrent = this.history.listen(location => {
@@ -52,7 +60,9 @@ const History = createReactClass({
     }
     this.unlistenBeforeLocationChange =
       this.history.listenBefore(this.onBeforeLocationChange);
-    this.unsubscribeFromLinks = onLink((event) => {
+    this.unsubscribeFromLinks = onLink({
+      shouldEmitCrossOriginLinks: shouldEmitCrossOriginLinks,
+    },(event) => {
       if (event.target.href) {
         // Anchor tags are frontend-only anyway, so they will get picked up
         // by history. Don't let them call `onChange`.
