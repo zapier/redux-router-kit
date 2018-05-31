@@ -1,6 +1,6 @@
 import test from 'ava';
 import 'babel-core/register';
-import matchRoutes from 'redux-router-kit/src/utils/matchRoutes';
+import matchRoutes from '../../src/utils/matchRoutes';
 
 const createRoutes = () => ({
   '/': 'root',

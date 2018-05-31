@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import 'babel-core/register';
-import statesAreEqual from 'redux-router-kit/src/utils/statesAreEqual';
+import statesAreEqual from '../../src/utils/statesAreEqual';
 
 test('null equal null', t => {
   t.true(statesAreEqual(null, null));
