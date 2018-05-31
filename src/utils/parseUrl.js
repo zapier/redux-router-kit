@@ -14,16 +14,19 @@ const hasScheme = url => {
 };
 
 const parseUrl = (url = '', baseUrl) => {
-
   if (!hasScheme(url)) {
     if (!hasScheme(baseUrl)) {
-      throw new Error('Must provide scheme in url or baseUrl to parse.');
+      throw new Error(
+        `Must provide scheme in url or baseUrl to parse. \`url\` provided: ${url}. \`baseUrl\` provided: ${baseUrl}.`
+      );
     }
   }
 
   if (!hasScheme(url)) {
     if (url[0] !== '/') {
-      throw new Error('Only absolute URLs are currently supported.');
+      throw new Error(
+        `Only absolute URLs are currently supported. \`url\` provided: ${url}`
+      );
     }
   }
 
