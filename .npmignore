@@ -14,3 +14,6 @@ coverage
 
 # Optional REPL history
 .node_repl_history
+
+# Tests
+test/
