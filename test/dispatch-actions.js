@@ -4,10 +4,10 @@ import sinon from 'sinon';
 
 import 'babel-core/register';
 
-import routerReducer from 'redux-router-kit/src/reducer';
-import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
-import { routeTo } from 'redux-router-kit/src/Actions';
-import findRoutes from 'redux-router-kit/src/utils/findRoutes';
+import routerReducer from '../src/reducer';
+import createRouterMiddleware from '../src/middleware/createRouterMiddleware';
+import { routeTo } from '../src/Actions';
+import findRoutes from '../src/utils/findRoutes';
 import { resetLocation } from '../src/Actions';
 
 const reducer = combineReducers({

@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import 'babel-core/register';
-import cloneRoutesForKey from 'redux-router-kit/src/utils/cloneRoutesForKey';
+import cloneRoutesForKey from '../../src/utils/cloneRoutesForKey';
 
 test('clone empty routes', t => {
   const routes = {};

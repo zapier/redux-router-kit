@@ -1,7 +1,7 @@
 import test from 'ava';
 import 'babel-core/register';
 
-import findRoutes from 'redux-router-kit/src/utils/findRoutes';
+import findRoutes from '../../src/utils/findRoutes';
 
 const routes = {
   '/users': 'users',

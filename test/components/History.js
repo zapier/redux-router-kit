@@ -6,7 +6,7 @@ import sinon from 'sinon';
 
 import 'babel-core/register';
 
-import History from 'redux-router-kit/src/components/History';
+import History from '../../src/components/History';
 
 test('History calls onChange for new history push', t => {
   const node = document.createElement('div');

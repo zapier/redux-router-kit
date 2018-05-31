@@ -1,7 +1,7 @@
 import test from 'ava';
 import 'babel-core/register';
 
-import isOnlyHrefHashChange from 'redux-router-kit/src/utils/isOnlyHrefHashChange';
+import isOnlyHrefHashChange from '../../src/utils/isOnlyHrefHashChange';
 
 test('will return `false` if the first or second location do not exist', t => {
   const locationA = undefined;

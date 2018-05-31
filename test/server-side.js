@@ -6,10 +6,10 @@ import { Provider } from 'react-redux';
 
 import 'babel-core/register';
 
-import routerReducer from 'redux-router-kit/src/reducer';
-import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
-import { routeTo } from 'redux-router-kit/src/Actions';
-import RouterContainer from 'redux-router-kit/src/components/RouterContainer';
+import routerReducer from '../src/reducer';
+import createRouterMiddleware from '../src/middleware/createRouterMiddleware';
+import { routeTo } from '../src/Actions';
+import RouterContainer from '../src/components/RouterContainer';
 import createReactClass from 'create-react-class';
 
 test('render route to string', t => {

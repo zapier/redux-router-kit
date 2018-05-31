@@ -8,10 +8,10 @@ import { Provider } from 'react-redux';
 
 import 'babel-core/register';
 
-import routerReducer from 'redux-router-kit/src/reducer';
-import createRouterMiddleware from 'redux-router-kit/src/middleware/createRouterMiddleware';
-import { routeTo } from 'redux-router-kit/src/Actions';
-import RouterHistoryContainer from 'redux-router-kit/src/components/RouterHistoryContainer';
+import routerReducer from '../src/reducer';
+import createRouterMiddleware from '../src/middleware/createRouterMiddleware';
+import { routeTo } from '../src/Actions';
+import RouterHistoryContainer from '../src/components/RouterHistoryContainer';
 import createReactClass from 'create-react-class';
 
 const reducer = combineReducers({
@@ -19,7 +19,7 @@ const reducer = combineReducers({
 });
 
 test('can import redux-router-kit without errors', t => {
-  require('redux-router-kit');
+  require('./..');
   t.pass();
 });
 
