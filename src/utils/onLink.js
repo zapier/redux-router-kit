@@ -72,9 +72,13 @@ const onLink = (config, handler) => {
     // 2. rel="external" attribute
     if (element.hasAttribute('download') || element.getAttribute('rel') === 'external') { return false; }
 
+    const lowerCasedHref = element.href.toLowerCase();
+
     // Check for mailto: in the href
-    const href = element.getAttribute('href');
-    if (href && href.indexOf('mailto:') > -1) { return false; }
+    if (lowerCasedHref.indexOf('mailto:') > -1) { return false; }
+    // Check for javascript: in the href
+    // eslint-disable-next-line no-script-url
+    if (lowerCasedHref.indexOf('javascript:') > -1) { return false; }
 
     // check target
     if (element.target) { return false; }
@@ -84,7 +88,7 @@ const onLink = (config, handler) => {
       return false;
     }
 
-    return href;
+    return element.href;
   };
 
   window.addEventListener(document.ontouchstart ? 'touchstart' : 'click', function (event) {

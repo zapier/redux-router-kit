@@ -29,7 +29,7 @@ test('onLink subscribe/click/unsubscribe', t => {
 
 test('onLink should emit cross-origin links when enabled', t => {
   const node = document.createElement('div');
-  node.id = 'onLinkContaine-1';
+  node.id = 'onLinkContainer-1';
   document.body.appendChild(node);
   node.innerHTML = `
     <a id="onlink-1" href="http://www.google.com/hello">Hello</a>
@@ -71,5 +71,24 @@ test('onLink should NOT emit cross-origin links when enabled', t => {
 
   document.getElementById('onlink-2').dispatchEvent(mouseEvent);
   t.is(onLinkSpy.lastCall.args[0].href, undefined);
+  unsubscribe();
+});
+
+test('onLink should NOT emit JavaScript links', t => {
+  const node = document.createElement('div');
+  node.id = 'onLinkContainer-3';
+  document.body.appendChild(node);
+  node.innerHTML = `
+    <a id="onlink-3" href="javascript:">Hello</a>
+  `;
+  const onLinkSpy = sinon.spy();
+  const unsubscribe = onLink({ shouldEmitCrossOriginLinks: false }, onLinkSpy);
+  var mouseEvent = new document.defaultView.MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true,
+  });
+  document.getElementById('onlink-3').dispatchEvent(mouseEvent);
+  t.true(onLinkSpy.notCalled);
   unsubscribe();
 });
