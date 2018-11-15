@@ -302,7 +302,7 @@ const AddTodoButton = ({routeTo}) => (
 const ConnectedAddTodoButton = connect(
   null,
   (dispatch) => {
-    routeTo(..args) {
+    routeTo(...args) {
       dispatch(routeTo(...args));
     }
   }
