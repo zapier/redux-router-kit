@@ -42,7 +42,6 @@
     "jsdom": "^8.2.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-redux": "^4.4.1",
     "redux": "^3.3.1",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
@@ -53,6 +52,7 @@
     "path-to-regexp": "^1.2.1",
     "prop-types": "^15.6.0",
     "query-string": "^4.1.0",
+    "react-redux": "^6.0.1",
     "url-parse": "^1.1.1"
   },
   "peerDependencies": {
