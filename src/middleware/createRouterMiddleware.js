@@ -21,6 +21,9 @@ import matchRoutes from '../utils/matchRoutes';
 import cloneRoutesForKey from '../utils/cloneRoutesForKey';
 import isOnlyLocationHashChange from '../utils/isOnlyLocationHashChange';
 
+// Kangzes annotations & why
+// https://github.com/zapier/zapier/pull/29960#issuecomment-522404231
+
 const UNDEFINED_HREF = 'http://example.com/';
 
 let _id = 0;
