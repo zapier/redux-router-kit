@@ -15,7 +15,9 @@ const createElementFromRoutes = ({
   }
   const element = matchedRoutes.reduceRight((childElement, route, matchedRouteIndex) => {
     const { component, components } = route;
-    if (typeof component !== 'function' && (!component || typeof components !== 'object')) {
+    const isComponent = ['object', 'function'].includes(typeof component);
+
+    if (!isComponent && (!component || typeof components !== 'object')) {
       return childElement;
     }
     const routeProps = {
