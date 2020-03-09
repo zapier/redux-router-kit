@@ -15,7 +15,10 @@ const createElementFromRoutes = ({
   }
   const element = matchedRoutes.reduceRight((childElement, route, matchedRouteIndex) => {
     const { component, components } = route;
-    if (typeof component !== 'function' && (!component || typeof components !== 'object')) {
+    const isComponent = typeof component === 'function' ||
+      (typeof component === 'object' && component.hasOwnProperty('$$typeof'));
+
+    if (!isComponent && (!component || typeof components !== 'object')) {
       return childElement;
     }
     const routeProps = {
