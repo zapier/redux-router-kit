@@ -48,7 +48,7 @@ const History = createReactClass({
            url !== this.props.url || !statesAreEqual(state, this.props.state);
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { shouldEmitCrossOriginLinks } = this.props;
     this.history = this.props.history || createHistory();
     if (this.props.url == null) {
@@ -126,7 +126,7 @@ const History = createReactClass({
     }
   },
 
-  componentWillReceiveProps({url, state, isWaiting}) {
+  UNSAFE_componentWillReceiveProps({url, state, isWaiting}) {
     // Cancel synchronously.
     if (this.waitingUrl != null && !isWaiting) {
       if (this.waitingUrl !== url || !statesAreEqual(this.waitingState, state)) {
