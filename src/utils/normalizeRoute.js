@@ -4,13 +4,16 @@
  */
 
 const normalizeRoute = (pathPattern, value) => {
+  const isComponent = typeof value === 'function' ||
+    (typeof value === 'object' && value.hasOwnProperty('$$typeof'));
+
   const route = {
-    path: pathPattern
+    path: pathPattern,
   };
-  if (typeof value === 'function') {
+  if (isComponent) {
     return {
       ...route,
-      component: value
+      component: value,
     };
   }
   if (value === null) {
@@ -19,18 +22,18 @@ const normalizeRoute = (pathPattern, value) => {
   if (typeof value === 'object') {
     return {
       ...value,
-      ...route
+      ...route,
     };
   }
   if (typeof value === 'string') {
     return {
       ...route,
-      name: value
+      name: value,
     };
   }
   return {
     ...route,
-    value
+    value,
   };
 };
 
